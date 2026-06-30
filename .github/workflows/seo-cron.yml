@@ -1,0 +1,440 @@
+# ═══════════════════════════════════════════════════════
+#  TRIO NEXUS SEO OS — GitHub Actions Background Scheduler
+#  Runs the SEO cycle automatically — no browser needed
+#  FREE: GitHub Actions gives 2,000 minutes/month free
+# ═══════════════════════════════════════════════════════
+
+name: Trio Nexus Autonomous SEO Cycle
+
+on:
+  # ── SMART RANDOM SCHEDULE ──
+  # Runs at different times to avoid Google pattern detection
+  # Twice per week: Monday 9am + Thursday 2pm Pakistan time (UTC+5)
+  schedule:
+    - cron: '0 4 * * 1'   # Monday    09:00 PKT  (04:00 UTC)
+    - cron: '0 9 * * 4'   # Thursday  14:00 PKT  (09:00 UTC)
+
+  # ── MANUAL TRIGGER from GitHub UI ──
+  workflow_dispatch:
+    inputs:
+      run_type:
+        description: 'What to run'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - keywords_only
+          - blog_only
+          - deploy_only
+
+env:
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  SITE_URL: https://www.trionexus.org
+
+# ── EXPLICIT WRITE PERMISSION ──
+# Required so the workflow can commit seo-data.json back to the repo.
+# Without this, GITHUB_TOKEN defaults to read-only and the commit step fails with 403.
+permissions:
+  contents: write
+
+jobs:
+  seo-cycle:
+    name: Run SEO Cycle
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install node-fetch@3 @netlify/sdk 2>/dev/null || true
+          # Fallback to built-in fetch (Node 18+)
+
+      - name: Run SEO Keyword Research
+        if: ${{ github.event.inputs.run_type != 'deploy_only' }}
+        run: |
+          cat > seo-script.cjs << 'JSEOF'
+          const fetch = globalThis.fetch || require('node-fetch');
+          const fs = require('fs');
+          (async () => {
+
+          const GEMINI_KEY = process.env.GEMINI_API_KEY;
+          if (!GEMINI_KEY) { console.log('No Gemini key — skipping AI steps'); process.exit(0); }
+
+          async function callGemini(prompt, maxTokens = 1024) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`;
+            for (let i = 0; i < 3; i++) {
+              try {
+                const res = await fetch(url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.75, maxOutputTokens: maxTokens }
+                  })
+                });
+                if (res.status === 429) { await new Promise(r => setTimeout(r, Math.pow(2,i)*5000)); continue; }
+                const d = await res.json();
+                return d?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              } catch(e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 5000)); }
+            }
+          }
+
+          const services = [
+            { key: 'law',   name: 'Trio Law Consultants',  niche: 'legal consultancy, corporate law, contracts, dispute resolution Pakistan' },
+            { key: 'study', name: 'Trio Study Abroad',     niche: 'study abroad consultancy, overseas education, student visa Pakistan, scholarships' },
+            { key: 'hr',    name: 'Trio HR Services',       niche: 'HR management, talent acquisition, payroll, workforce planning Pakistan' }
+          ];
+
+          let results = {};
+          try { results = JSON.parse(fs.readFileSync('seo-data.json', 'utf8')); } catch(e) { results = { keywords: {}, faqs: [], blog_posts: [], runs: 0 }; }
+
+          console.log('=== Trio Nexus SEO Cycle Starting ===');
+
+          for (const svc of services) {
+            console.log(`\nProcessing: ${svc.name}`);
+            try {
+              // Keyword research
+              const kwRaw = await callGemini(
+                `SEO expert Pakistan. Service:"${svc.name}" Niche:${svc.niche}\nReturn ONLY JSON:\n{"seo_keywords":["k1","k2","k3","k4","k5","k6"],"aeo_questions":["q1","q2","q3"]}`, 512
+              );
+              const kwData = JSON.parse(kwRaw.replace(/\`\`\`json|\`\`\`/g, '').trim());
+              if (!results.keywords) results.keywords = {};
+              results.keywords[svc.key] = kwData.seo_keywords || [];
+              console.log(`  ✓ Keywords: ${(kwData.seo_keywords||[]).slice(0,3).join(', ')}...`);
+
+              // Content rewrite
+              const existing = results[`desc_${svc.key}`] || '';
+              const rewriteRaw = await callGemini(
+                `SEO writer Pakistani consultancy.\nService:"${svc.name}" Keywords:${(kwData.seo_keywords||[]).join(',')} AEO:${(kwData.aeo_questions||[]).join('|')}\nContent:"""${existing.substring(0,400)}"""\nReturn ONLY 2 <p> tags. Professional. Pakistan audience.`, 768
+              );
+              let newContent = rewriteRaw.replace(/\`\`\`html|\`\`\`/g, '').trim();
+              if (!newContent.includes('<p>')) newContent = `<p>${newContent}</p>`;
+              results[`desc_${svc.key}`] = newContent;
+              results[`title_${svc.key}`] = svc.name;
+              results[`updated_${svc.key}`] = new Date().toLocaleDateString('en-PK', { dateStyle: 'medium' });
+              console.log(`  ✓ Content rewritten`);
+
+              await new Promise(r => setTimeout(r, 1500));
+            } catch(e) { console.error(`  ✗ ${svc.name}: ${e.message}`); }
+          }
+
+          // Generate blog post
+          const topics = [
+            { title: 'Corporate Law Services in Lahore 2025', cat: 'Legal' },
+            { title: 'Poland Student Visa Guide for Pakistanis', cat: 'Study Abroad' },
+            { title: 'HR Payroll Management Best Practices Pakistan', cat: 'HR' },
+            { title: 'Germany Scholarships for Pakistani Students 2025', cat: 'Study Abroad' },
+            { title: 'Contract Drafting Essentials for Pakistani Businesses', cat: 'Legal' },
+            { title: 'Executive Search Trends in Pakistan 2025', cat: 'HR' }
+          ];
+          const used = results.used_topics || [];
+          const available = topics.filter(t => !used.includes(t.title));
+          const topic = available.length ? available[0] : topics[Math.floor(Math.random() * topics.length)];
+
+          try {
+            console.log(`\nGenerating blog: ${topic.title}`);
+            const blogRaw = await callGemini(
+              `Write 250-350 word SEO blog for Trio Nexus Pakistan.\nTitle:"${topic.title}" Category:${topic.cat}\nProfessional, Pakistan context, H3 subheadings, CTA.\nReturn ONLY HTML <p><h3><ul>.`, 1024
+            );
+            const blogHtml = blogRaw.replace(/\`\`\`html|\`\`\`/g, '').trim();
+            const excerpt = blogHtml.replace(/<[^>]+>/g, ' ').substring(0, 150) + '...';
+            if (!results.blog_posts) results.blog_posts = [];
+            results.blog_posts.unshift({
+              title: topic.title, category: topic.cat, content: blogHtml,
+              excerpt, date: new Date().toLocaleDateString('en-PK'), readTime: '3 min'
+            });
+            if (results.blog_posts.length > 30) results.blog_posts.length = 30;
+            results.used_topics = [...used, topic.title].slice(-30);
+            console.log(`  ✓ Blog: "${topic.title}"`);
+          } catch(e) { console.error(`  ✗ Blog: ${e.message}`); }
+
+          // Generate FAQs
+          try {
+            const faqRaw = await callGemini(
+              `2 unique FAQs for Trio Nexus Pakistan (law/study/HR).\nReturn ONLY JSON:[{"q":"...","a":"..."},{"q":"...","a":"..."}]`, 400
+            );
+            const newFaqs = JSON.parse(faqRaw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+            if (!results.faqs) results.faqs = [];
+            newFaqs.forEach(f => { if (!results.faqs.find(x => x.q === f.q)) results.faqs.push(f); });
+            if (results.faqs.length > 20) results.faqs = results.faqs.slice(-20);
+            console.log(`  ✓ FAQs: ${newFaqs.length} added`);
+          } catch(e) { console.error(`  ✗ FAQs: ${e.message}`); }
+
+          results.runs = (results.runs || 0) + 1;
+          results.lastRun = new Date().toISOString();
+
+          fs.writeFileSync('seo-data.json', JSON.stringify(results, null, 2));
+          console.log(`\n✓ SEO data saved (run #${results.runs})`);
+          })().catch(e => { console.error('Fatal error:', e); process.exit(1); });
+          JSEOF
+          node seo-script.cjs
+
+      - name: Build and Deploy to Netlify
+        if: ${{ env.NETLIFY_TOKEN != '' && env.NETLIFY_SITE_ID != '' }}
+        run: |
+          cat > deploy-script.cjs << 'JSEOF'
+          const fetch = globalThis.fetch || require('node-fetch');
+          const fs = require('fs');
+          const crypto = require('crypto');
+          (async () => {
+
+          const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+          const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
+
+          // Load SEO data
+          let data = {};
+          try { data = JSON.parse(fs.readFileSync('seo-data.json', 'utf8')); } catch(e) { console.log('No SEO data'); process.exit(0); }
+
+          function slugify(t){ return (t||'post').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+          // ── LIVE-FILES PRESERVATION ──────────────────────────────────────
+          // Fetch all files currently on the live Netlify site so we can
+          // merge them into this deploy.  Any file NOT regenerated by this
+          // script (e.g. tn-admin-secure.html, seo-os.html, blog.html) will
+          // be re-included verbatim, preventing accidental deletions.
+          async function fetchLiveFiles() {
+            const liveFiles = {};
+            try {
+              // 1. Get the most recent published deploy
+              const deploysRes = await fetch(
+                `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys?per_page=5`,
+                { headers: { 'Authorization': `Bearer ${NETLIFY_TOKEN}` } }
+              );
+              if (!deploysRes.ok) { console.log('  Could not list deploys — skipping live-file merge'); return liveFiles; }
+              const deploys = await deploysRes.json();
+              const published = deploys.find(d => d.state === 'ready' || d.state === 'current');
+              if (!published) { console.log('  No published deploy found — skipping live-file merge'); return liveFiles; }
+              console.log(`  Found live deploy: ${published.id} (${published.created_at})`);
+
+              // 2. List every file in that deploy
+              const filesRes = await fetch(
+                `https://api.netlify.com/api/v1/deploys/${published.id}/files`,
+                { headers: { 'Authorization': `Bearer ${NETLIFY_TOKEN}` } }
+              );
+              if (!filesRes.ok) { console.log('  Could not list deploy files — skipping live-file merge'); return liveFiles; }
+              const fileList = await filesRes.json();
+              console.log(`  Live deploy contains ${fileList.length} files — fetching static ones...`);
+
+              // 3. Download each file that we want to preserve.
+              //    Skip files the SEO script will regenerate (index.html,
+              //    /blog/*, sitemap.xml, robots.txt, llms.txt) — those are
+              //    always rebuilt fresh.
+              const SKIP_PATTERNS = [
+                /^\/index\.html$/,
+                /^\/blog\//,
+                /^\/sitemap\.xml$/,
+                /^\/robots\.txt$/,
+                /^\/llms\.txt$/,
+              ];
+              const toPreserve = fileList.filter(f => !SKIP_PATTERNS.some(re => re.test(f.id)));
+              console.log(`  Preserving ${toPreserve.length} static live files...`);
+
+              await Promise.all(toPreserve.map(async (f) => {
+                try {
+                  const r = await fetch(`https://www.trionexus.org${f.id}`);
+                  if (r.ok) {
+                    liveFiles[f.id] = await r.text();
+                    console.log(`    ✓ preserved: ${f.id}`);
+                  } else {
+                    console.log(`    ✗ could not fetch ${f.id} (${r.status}) — skipped`);
+                  }
+                } catch(e) {
+                  console.log(`    ✗ error fetching ${f.id}: ${e.message} — skipped`);
+                }
+              }));
+            } catch(e) {
+              console.log(`  Live-file fetch error: ${e.message} — proceeding without merge`);
+            }
+            return liveFiles;
+          }
+
+          console.log('\nFetching live site files for preservation...');
+          const liveFiles = await fetchLiveFiles();
+          // ─────────────────────────────────────────────────────────────────
+
+          // Build index.html with latest content
+          const lawTitle = data.title_law || 'Trio Law Consultants';
+          const studyTitle = data.title_study || 'Trio Study Abroad';
+          const hrTitle = data.title_hr || 'Trio HR Services';
+          const lawDesc = data.desc_law || '<p>Expert legal advisory in Pakistan.</p>';
+          const studyDesc = data.desc_study || '<p>Your gateway to international education.</p>';
+          const hrDesc = data.desc_hr || '<p>End-to-end HR solutions.</p>';
+          const faqs = data.faqs || [];
+          const posts = data.blog_posts || [];
+          const now = new Date().toLocaleDateString('en-PK', { dateStyle: 'medium' });
+
+          const defaultFAQs = [
+            { q: 'What services does Trio Nexus offer?', a: 'Trio Nexus offers legal consultancy, study abroad guidance, and HR services in Lahore, Pakistan.' },
+            { q: 'Is Trio Nexus based in Lahore?', a: 'Yes, Trio Nexus is headquartered in Lahore, Pakistan, serving clients nationwide and internationally.' }
+          ];
+          const allFaqs = [...defaultFAQs, ...faqs].slice(0, 8);
+
+          const faqSchema = JSON.stringify({
+            '@context': 'https://schema.org', '@type': 'FAQPage',
+            mainEntity: allFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }))
+          });
+
+          const indexHtml = `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+          <meta name="robots" content="index,follow">
+          <title>Trio Nexus | Law, Study Abroad & HR Consultants Pakistan</title>
+          <meta name="description" content="Trio Nexus offers expert legal consultancy, study abroad guidance, and HR services in Pakistan.">
+          <link rel="canonical" href="https://www.trionexus.org/">
+          <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Trio Nexus","url":"https://www.trionexus.org","address":{"@type":"PostalAddress","addressLocality":"Lahore","addressCountry":"PK"}}<\/script>
+          <script type="application/ld+json">${faqSchema}<\/script>
+          <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+          <style>:root{--navy:#050C1A;--navy-2:#0A1628;--navy-3:#0F2040;--gold:#C5A24D;--gold-l:#D4B568;--cream:#F0EBE0;--muted:#A8A09A;--border:rgba(197,162,77,.18);--teal:#2FB5C4}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--navy);color:var(--cream);font-family:'Inter',sans-serif;font-weight:300;overflow-x:hidden;line-height:1.6}header{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,12,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}.logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}.logo-name{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;font-weight:700;color:var(--gold)}.logo-name span{color:var(--cream);font-weight:300}nav{display:flex;align-items:center;gap:2rem}nav a{font-size:.78rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none}.nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--navy);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.3rem;border:none;cursor:pointer;border-radius:6px;text-decoration:none}.hero{min-height:100vh;display:grid;place-items:center;text-align:center;padding:8rem 2rem 5rem;position:relative}.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 38%,rgba(197,162,77,.07),transparent 65%);pointer-events:none}.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-size:.68rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem}.eyebrow::before,.eyebrow::after{content:'';display:block;width:36px;height:1px;background:var(--gold);opacity:.45}h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,7rem);font-weight:400;line-height:1.05;margin-bottom:1.6rem}h1 em{font-style:italic;color:rgba(240,235,224,.4)}h1 strong{font-weight:700;color:var(--gold);display:block}.sub{font-size:1rem;line-height:1.85;color:var(--muted);max-width:560px;margin:0 auto 2.8rem}.btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}.btn-p{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--navy);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.85rem 2.2rem;border:none;cursor:pointer;border-radius:6px;box-shadow:0 4px 16px rgba(197,162,77,.3)}.btn-g{background:transparent;color:var(--muted);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:.85rem 2.2rem;border:1px solid var(--border);cursor:pointer;border-radius:6px}.sec{padding:7rem 3rem 9rem;max-width:1440px;margin:0 auto}.sec-eye{font-size:.66rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}.sec-h{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:400;line-height:1.15;max-width:480px;margin-bottom:4rem}.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden}.svc-card{padding:3rem 2.6rem;border-right:1px solid var(--border);background:var(--navy-2);transition:background .35s;position:relative;overflow:hidden}.svc-card:last-child{border-right:none}.svc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-l));transform:scaleX(0);transition:transform .45s}.svc-card:hover{background:var(--navy-3)}.svc-card:hover::after{transform:scaleX(1)}.card-idx{font-family:'Playfair Display',serif;font-size:4.5rem;font-weight:700;color:rgba(197,162,77,.06);position:absolute;top:1.5rem;right:2rem;line-height:1}.svc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:600;margin-bottom:1.2rem}.svc-body{font-size:.875rem;line-height:1.9;color:var(--muted)}.svc-body p{margin-bottom:.85em}.svc-updated{font-size:.62rem;color:rgba(197,162,77,.4);margin-top:.8rem;font-style:italic}.faq-sec{padding:6rem 3rem 8rem;max-width:900px;margin:0 auto}.faq-list{border-top:1px solid rgba(255,255,255,.05)}.faq-item{border-bottom:1px solid rgba(255,255,255,.05)}.faq-q{width:100%;background:none;border:none;color:var(--cream);font-family:'Inter',sans-serif;font-size:.92rem;text-align:left;padding:1.4rem 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}.faq-icon{width:20px;height:20px;border:1px solid rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;transition:all .25s}.faq-q.open .faq-icon{border-color:var(--gold);color:var(--gold);transform:rotate(45deg)}.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}.faq-a.open{max-height:400px;padding-bottom:1.4rem}.faq-a p{font-size:.875rem;line-height:1.85;color:var(--muted)}.trust{padding:5rem 3rem 6rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--navy-2)}.trust-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:10px;overflow:hidden}.trust-item{background:var(--navy-2);padding:2.4rem 2rem;text-align:center}.trust-num{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:400;color:var(--gold);margin-bottom:.4rem}.trust-lbl{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.blog-sec{padding:7rem 3rem 8rem;max-width:1440px;margin:0 auto}.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:3rem}.blog-card{background:var(--navy-2);padding:2.4rem 2.2rem;transition:background .3s;cursor:pointer}.blog-card:hover{background:var(--navy-3)}.blog-tag{font-size:.62rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:.9rem}.blog-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:600;line-height:1.3;margin-bottom:.8rem}.blog-excerpt{font-size:.82rem;line-height:1.8;color:var(--muted)}.blog-meta{font-size:.65rem;color:rgba(168,160,154,.6);margin-top:1.2rem}footer{border-top:1px solid var(--border);padding:3rem;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}.f-logo{display:flex;align-items:center;gap:.6rem}.f-logo-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gold)}.f-logo-name span{color:var(--cream);font-weight:300}.f-links{display:flex;gap:2rem;justify-content:center}.f-links a{font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none}.f-r{text-align:right;font-size:.72rem;color:var(--muted)}.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}.reveal.visible{opacity:1;transform:translateY(0)}@media(max-width:1024px){.svc-grid,.blog-grid,.trust-grid{grid-template-columns:1fr}.svc-card{border-right:none;border-bottom:1px solid var(--border)}footer{grid-template-columns:1fr;text-align:center}.f-r{text-align:center}header{padding:1rem 1.5rem}.sec,.blog-sec,.faq-sec{padding-left:1.5rem;padding-right:1.5rem}.nav-cta{display:none}}</style>
+          </head>
+          <body>
+          <header>
+            <a class="logo" href="/"><div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#162B55,#1E3A6E);border:1px solid rgba(197,162,77,.22);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C5A24D" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="logo-name">Trio<span> Nexus</span></span></a>
+            <nav><a href="#services">Services</a><a href="#faq">FAQ</a><a href="/blog.html">Blog</a><a href="#contact">Contact</a><a class="nav-cta" href="#contact">Get Started</a></nav>
+          </header>
+          <section class="hero">
+            <div style="max-width:900px">
+              <div class="eyebrow">Est. 2024 — Lahore, Pakistan</div>
+              <h1>Three pillars.<br><em>One</em> <strong>Nexus.</strong></h1>
+              <p class="sub">Trio Nexus unites expert legal advisory, international education consultancy, and human resource management — delivering precision across every dimension of your ambitions.</p>
+              <div class="btns">
+                <button class="btn-p" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Explore Services</button>
+                <button class="btn-g" onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">Learn More</button>
+              </div>
+            </div>
+          </section>
+          <section class="sec" id="services">
+            <div class="sec-eye reveal">What We Offer</div>
+            <h2 class="sec-h reveal">Three disciplines.<br>Uncompromising quality.</h2>
+            <div class="svc-grid">
+              <article class="svc-card reveal"><div class="card-idx">01</div><h3 class="svc-title">${lawTitle}</h3><div class="svc-body">${lawDesc}</div>${data.updated_law ? `<div class="svc-updated">AI-optimised: ${data.updated_law}</div>` : ''}</article>
+              <article class="svc-card reveal"><div class="card-idx">02</div><h3 class="svc-title">${studyTitle}</h3><div class="svc-body">${studyDesc}</div>${data.updated_study ? `<div class="svc-updated">AI-optimised: ${data.updated_study}</div>` : ''}</article>
+              <article class="svc-card reveal"><div class="card-idx">03</div><h3 class="svc-title">${hrTitle}</h3><div class="svc-body">${hrDesc}</div>${data.updated_hr ? `<div class="svc-updated">AI-optimised: ${data.updated_hr}</div>` : ''}</article>
+            </div>
+          </section>
+          <section class="trust"><div class="trust-grid reveal"><div class="trust-item"><div class="trust-num">500+</div><div class="trust-lbl">Clients Served</div></div><div class="trust-item"><div class="trust-num">3</div><div class="trust-lbl">Expert Divisions</div></div><div class="trust-item"><div class="trust-num">25+</div><div class="trust-lbl">Countries</div></div><div class="trust-item"><div class="trust-num">2024</div><div class="trust-lbl">Founded Lahore</div></div></div></section>
+          <section class="faq-sec" id="faq">
+            <div class="sec-eye reveal">Common Questions</div>
+            <h2 class="sec-h reveal">Everything you need to know.</h2>
+            <div class="faq-list">${allFaqs.map(f=>`<div class="faq-item"><button class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">${f.q}<span class="faq-icon">+</span></button><div class="faq-a"><p>${f.a}</p></div></div>`).join('')}</div>
+          </section>
+          <section class="blog-sec" id="blog">
+            <div class="sec-eye reveal">Insights & Guides</div>
+            <h2 class="sec-h reveal">Latest from Trio Nexus.</h2>
+            <div class="blog-grid">${posts.length ? posts.slice(0,3).map(p=>`<article class="blog-card" onclick="window.open('/blog/${slugify(p.title)}.html','_blank')"><div class="blog-tag">${p.category||'Insights'}</div><h3 class="blog-title">${p.title}</h3><p class="blog-excerpt">${p.excerpt||''}</p><div class="blog-meta">${p.date} · ${p.readTime||'3 min read'}</div></article>`).join('') : '<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted)">Blog articles will appear here.</div>'}</div>
+          </section>
+          <footer>
+            <div class="f-logo"><div style="width:26px;height:26px;border-radius:5px;background:rgba(197,162,77,.1);border:1px solid rgba(197,162,77,.22);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C5A24D" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="f-logo-name">Trio<span> Nexus</span></span></div>
+            <div class="f-links"><a href="#services">Services</a><a href="#faq">FAQ</a><a href="/blog.html">Blog</a><a href="/sitemap.xml">Sitemap</a></div>
+            <div class="f-r"><div>© 2024 Trio Nexus, Lahore, Pakistan</div><div style="margin-top:.3rem;font-size:.65rem">Last updated: ${now}</div></div>
+          </footer>
+          <script>
+          const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});},{threshold:.12});
+          document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+          <\/script>
+          </body></html>`;
+
+          // Build files to deploy
+          const files = { '/index.html': indexHtml };
+
+          // Build blog pages
+          posts.slice(0, 15).forEach(post => {
+            const slug = slugify(post.title);
+            files[`/blog/${slug}.html`] = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${post.title} | Trio Nexus</title><meta name="description" content="${(post.excerpt||'').substring(0,155)}"><link rel="canonical" href="https://www.trionexus.org/blog/${slug}.html"><style>body{font-family:sans-serif;background:#050C1A;color:#F0EBE0;margin:0;line-height:1.7}header{background:rgba(10,22,40,.95);border-bottom:1px solid rgba(197,162,77,.2);padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.4rem;color:#C5A24D;text-decoration:none;font-weight:700}nav a{color:#888;text-decoration:none;margin-left:1.5rem;font-size:.82rem}.content{max-width:800px;margin:0 auto;padding:4rem 3rem}h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:1rem;color:#F0EBE0}.meta{font-size:.78rem;color:#888;margin-bottom:2rem}.content p{color:#888;margin-bottom:1.5em}.content h2,.content h3{color:#F0EBE0;margin:2rem 0 1rem}.cta{background:#0A1628;border-top:1px solid rgba(197,162,77,.15);padding:3rem;text-align:center}.cta-btn{background:linear-gradient(135deg,#C5A24D,#D4B568);color:#050C1A;text-decoration:none;padding:.9rem 2.5rem;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;display:inline-block;font-weight:700;border-radius:6px}footer{border-top:1px solid rgba(197,162,77,.15);padding:2rem 3rem;text-align:center;font-size:.75rem;color:#555}@media(max-width:768px){.content{padding:3rem 1.5rem}}</style></head><body><header><a class="logo" href="/">Trio Nexus</a><nav><a href="/">Home</a><a href="/#services">Services</a><a href="/blog.html">Blog</a></nav></header><div class="content"><div class="meta">${post.category} · ${post.date} · ${post.readTime||'3 min read'}</div><h1>${post.title}</h1>${post.content||''}</div><section class="cta"><h2 style="color:#F0EBE0;font-weight:400;margin-bottom:1rem">Need expert guidance?</h2><a class="cta-btn" href="/">Contact Trio Nexus →</a></section><footer>© 2024 Trio Nexus, Lahore, Pakistan</footer></body></html>`;
+          });
+
+          // Build sitemap
+          const today = new Date().toISOString().split('T')[0];
+          files['/sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${Object.keys(files).filter(p=>p.endsWith('.html')).map(u=>`  <url>\n    <loc>https://www.trionexus.org${u}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${u==='/index.html'?'1.0':'0.8'}</priority>\n  </url>`).join('\n')}\n</urlset>`;
+          files['/robots.txt'] = `User-agent: *\nAllow: /\nDisallow: /tn-admin-secure.html\n\nSitemap: https://www.trionexus.org/sitemap.xml\n\nUser-agent: GPTBot\nAllow: /\nUser-agent: PerplexityBot\nAllow: /`;
+          files['/llms.txt'] = `# Trio Nexus\n# https://www.trionexus.org\n\n## About\nProfessional consultancy in Lahore, Pakistan: law, study abroad, HR.\n\n## FAQs\n${(data.faqs||[]).slice(0,5).map(f=>`Q: ${f.q}\nA: ${f.a}`).join('\n\n')}`;
+
+          // ── MERGE live static files (won't overwrite freshly built ones) ──
+          let mergedCount = 0;
+          for (const [path, content] of Object.entries(liveFiles)) {
+            if (!files[path]) {
+              files[path] = content;
+              mergedCount++;
+            }
+          }
+          if (mergedCount > 0) console.log(`\n  Merged ${mergedCount} preserved live file(s) into deploy.`);
+
+          // Compute SHA-1 digests
+          const fileDigests = {};
+          for (const [path, content] of Object.entries(files)) {
+            fileDigests[path] = crypto.createHash('sha1').update(content).digest('hex');
+          }
+
+          console.log(`\nDeploying ${Object.keys(files).length} files to Netlify...`);
+
+          // Create deploy
+          const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${NETLIFY_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ files: fileDigests })
+          });
+
+          if (!deployRes.ok) {
+            const err = await deployRes.json().catch(() => ({}));
+            throw new Error(`Deploy creation failed: ${err.message || deployRes.status}`);
+          }
+
+          const deploy = await deployRes.json();
+          // Netlify's "required" array contains SHA1 HASHES that need uploading — NOT file paths!
+          const requiredHashes = new Set(deploy.required || []);
+          console.log(`Deploy ID: ${deploy.id} | Files required by hash: ${requiredHashes.size}`);
+
+          // Upload files whose digest matches a required hash
+          let uploaded = 0;
+          for (const [filePath, content] of Object.entries(files)) {
+            const hash = fileDigests[filePath];
+            if (!requiredHashes.has(hash)) { console.log(`  skip (already on CDN): ${filePath}`); continue; }
+            const uploadRes = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${filePath}`, {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${NETLIFY_TOKEN}`, 'Content-Type': 'application/octet-stream' },
+              body: Buffer.from(content)
+            });
+            if (uploadRes.ok) { uploaded++; console.log(`  ✓ uploaded: ${filePath}`); }
+            else { console.error(`  ✗ FAILED: ${filePath}: ${uploadRes.status}`); }
+          }
+
+          console.log(`\n✓ Deploy complete: ${uploaded}/${requiredHashes.size} files uploaded`);
+          console.log(`  Total files processed: ${Object.keys(files).length}`);
+          })().catch(e => { console.error('Fatal error:', e); process.exit(1); });
+          JSEOF
+          node deploy-script.cjs
+
+      - name: Commit SEO data back to repository
+        run: |
+          git config --global user.email "seo-bot@trionexus.org"
+          git config --global user.name "Trio Nexus SEO Bot"
+          git add seo-data.json
+          git diff --staged --quiet || git commit -m "🤖 Autonomous SEO cycle — $(date '+%Y-%m-%d %H:%M PKT')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "=== Trio Nexus SEO Cycle Complete ==="
+          echo "Time: $(date '+%Y-%m-%d %H:%M UTC')"
+          echo "Next scheduled run: See cron schedule above"
+          if [ -f seo-data.json ]; then
+            node -e "
+              const d=JSON.parse(require('fs').readFileSync('seo-data.json'));
+              console.log('Total AI runs: '+(d.runs||0));
+              console.log('Blog posts: '+(d.blog_posts||[]).length);
+              console.log('FAQs: '+(d.faqs||[]).length);
+            "
+          fi
