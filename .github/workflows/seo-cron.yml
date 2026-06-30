@@ -206,6 +206,19 @@ jobs:
           async function fetchLiveFiles() {
             const liveFiles = {};
             try {
+              // 0. Get the site's actual live URL from Netlify itself —
+              //    never hardcode a domain, since the site may be on a
+              //    temporary *.netlify.app URL or a connected custom domain.
+              const siteRes = await fetch(
+                `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}`,
+                { headers: { 'Authorization': `Bearer ${NETLIFY_TOKEN}` } }
+              );
+              if (!siteRes.ok) { console.log('  Could not fetch site info — skipping live-file merge'); return liveFiles; }
+              const siteInfo = await siteRes.json();
+              const liveBaseUrl = siteInfo.ssl_url || siteInfo.url;
+              if (!liveBaseUrl) { console.log('  No live URL found for site — skipping live-file merge'); return liveFiles; }
+              console.log(`  Live site base URL: ${liveBaseUrl}`);
+
               // 1. Get the most recent published deploy
               const deploysRes = await fetch(
                 `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys?per_page=5`,
@@ -242,9 +255,21 @@ jobs:
 
               await Promise.all(toPreserve.map(async (f) => {
                 try {
-                  const r = await fetch(`https://www.trionexus.org${f.id}`);
+                  const r = await fetch(`${liveBaseUrl}${f.id}`);
                   if (r.ok) {
-                    liveFiles[f.id] = await r.text();
+                    const text = await r.text();
+                    // Safety check: if the server returned the homepage
+                    // instead of the real file (common silent-fallback
+                    // behavior), do NOT preserve it — skip so the old
+                    // live version simply stays untouched on Netlify.
+                    const looksLikeHomepageFallback =
+                      f.id !== '/index.html' &&
+                      /Three pillars\.\s*<\/?[a-z]*>?\s*One/i.test(text);
+                    if (looksLikeHomepageFallback) {
+                      console.log(`    ⚠ skipped ${f.id} — response looked like homepage fallback, not the real file`);
+                      return;
+                    }
+                    liveFiles[f.id] = text;
                     console.log(`    ✓ preserved: ${f.id}`);
                   } else {
                     console.log(`    ✗ could not fetch ${f.id} (${r.status}) — skipped`);
