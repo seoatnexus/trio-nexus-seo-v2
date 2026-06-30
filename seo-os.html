@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Trio Nexus — SEO OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold-light:#E8C97A;--gold-dim:rgba(201,168,76,.1);
+  --dark:#080808;--dark-2:#111;--dark-3:#191919;--dark-4:#1E1E1E;
+  --mid:#252525;--mid-2:#2E2E2E;--text:#E4E0D8;--muted:#777;--muted-2:#444;
+  --border:rgba(201,168,76,.15);--border-2:rgba(255,255,255,.05);
+  --teal:#4CA8A8;--green:#6EC98F;--red:#D96060;--amber:#D4934A;
+  --blue:#5A8FC4;--purple:#8A6CC4;
+  --font-d:'Cormorant Garamond',serif;--font-b:'DM Sans',sans-serif;--font-m:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--dark);color:var(--text);font-family:var(--font-b);font-size:13px;font-weight:300;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{height:52px;background:var(--dark-2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1.5rem;flex-shrink:0}
+.topbar-logo{font-family:var(--font-d);font-size:1.15rem;font-weight:600;color:var(--gold);white-space:nowrap}
+.topbar-logo span{color:var(--text);font-weight:300}
+.topbar-badge{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;border:1px solid rgba(76,168,168,.3);color:var(--teal);padding:.2rem .55rem;margin-left:.4rem}
+.topbar-spacer{flex:1}
+.topbar-status{display:flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--mid)}
+.status-dot.on{background:var(--green);animation:bp 2s ease-in-out infinite}
+.status-dot.run{background:var(--teal);animation:bp .6s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:.3}50%{opacity:1}}
+.topbar-btn{background:transparent;border:1px solid var(--border-2);color:var(--muted);font-family:var(--font-b);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;padding:.4rem .85rem;cursor:pointer;transition:all .2s}
+.topbar-btn:hover{border-color:var(--border);color:var(--text)}
+.topbar-btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:210px;background:var(--dark-2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--mid-2)}
+.sidebar-section{padding:.9rem 1rem .4rem;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-2)}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.65rem 1.1rem;cursor:pointer;border-left:2px solid transparent;transition:all .15s;color:var(--muted)}
+.nav-item:hover{background:rgba(255,255,255,.02);color:var(--text)}
+.nav-item.active{border-left-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.05)}
+.nav-icon{font-size:.85rem;width:16px;text-align:center;flex-shrink:0}
+.nav-label{font-size:.72rem;letter-spacing:.04em}
+.nav-badge{margin-left:auto;font-size:.58rem;background:var(--gold-dim);color:var(--gold);padding:.1rem .4rem;border-radius:2px;font-family:var(--font-m)}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border-2);padding:.8rem 1rem}
+.sidebar-key-wrap{display:flex;flex-direction:column;gap:.4rem}
+.sidebar-key-label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-2)}
+.sidebar-key-input{background:var(--dark-3);border:1px solid var(--mid);color:var(--text);font-family:var(--font-m);font-size:.7rem;padding:.45rem .6rem;outline:none;width:100%;transition:border-color .2s}
+.sidebar-key-input:focus{border-color:var(--teal)}
+.sidebar-key-row{display:flex;gap:.4rem;margin-top:.3rem}
+.sk-btn{flex:1;background:transparent;border:1px solid rgba(76,168,168,.3);color:var(--teal);font-family:var(--font-b);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem;cursor:pointer;transition:all .18s}
+.sk-btn:hover{background:rgba(76,168,168,.1)}
+.key-saved{font-size:.62rem;color:var(--green);margin-top:.3rem;display:none}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--dark)}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:var(--mid)}
+.panel{display:none;padding:1.8rem 2rem;min-height:100%}
+.panel.active{display:block}
+
+/* PANEL HEADER */
+.panel-hdr{margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border-2)}
+.panel-title{font-family:var(--font-d);font-size:1.55rem;font-weight:300;color:var(--text);margin-bottom:.25rem}
+.panel-sub{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+
+/* CARD GRID */
+.card-grid{display:grid;gap:1px;background:var(--border-2)}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.card-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.os-card{background:var(--dark-2);padding:1.4rem 1.6rem}
+.os-card.span-2{grid-column:span 2}
+
+/* STAT CARDS */
+.stat-card{text-align:center}
+.stat-val{font-family:var(--font-d);font-size:2.2rem;font-weight:300;color:var(--gold);line-height:1}
+.stat-lbl{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.4rem}
+.stat-delta{font-size:.65rem;color:var(--green);margin-top:.2rem}
+
+/* SCHEDULER */
+.sched-card{background:var(--dark-3);border:1px solid rgba(76,168,168,.15);padding:1.4rem 1.6rem;margin-bottom:1.2rem}
+.sched-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.sched-label{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.t-track{position:absolute;inset:0;background:var(--mid);border-radius:11px;transition:background .2s}
+.toggle input:checked+.t-track{background:var(--teal)}
+.t-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle input:checked~.t-thumb{transform:translateX(18px)}
+.sched-select{background:var(--dark);border:1px solid var(--mid-2);color:var(--text);font-family:var(--font-b);font-size:.72rem;padding:.4rem .7rem;outline:none;cursor:pointer}
+.sched-select:focus{border-color:var(--teal)}
+.run-btn{background:transparent;border:1px solid rgba(76,168,168,.35);color:var(--teal);font-family:var(--font-b);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;padding:.45rem .9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.run-btn:hover:not(:disabled){background:rgba(76,168,168,.08)}
+.run-btn:disabled{opacity:.35;cursor:not-allowed}
+.run-btn .spin{animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.next-info{font-size:.65rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.next-info span{color:var(--text)}
+
+/* PROGRESS PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border-2);margin-top:1.2rem}
+.pipe-step{background:var(--dark-3);padding:.8rem .7rem;text-align:center}
+.pipe-step-icon{font-size:1rem;margin-bottom:.3rem;display:block}
+.pipe-step-label{font-size:.6rem;letter-spacing:.08em;color:var(--muted);line-height:1.3}
+.pipe-step.ps-done{background:rgba(110,201,143,.06)}
+.pipe-step.ps-done .pipe-step-icon{filter:none}
+.pipe-step.ps-active{background:rgba(76,168,168,.07);animation:activePulse 1.5s ease-in-out infinite}
+.pipe-step.ps-active .pipe-step-label{color:var(--teal)}
+@keyframes activePulse{0%,100%{background:rgba(76,168,168,.04)}50%{background:rgba(76,168,168,.11)}}
+
+/* ACTIVITY LOG */
+.log-wrap{background:var(--dark);border:1px solid var(--border-2);font-family:var(--font-m);font-size:.68rem;height:220px;overflow-y:auto;padding:.5rem .7rem}
+.log-wrap::-webkit-scrollbar{width:3px}
+.log-wrap::-webkit-scrollbar-thumb{background:var(--mid)}
+.log-ln{display:flex;gap:.6rem;padding:.25rem 0;border-bottom:1px solid rgba(255,255,255,.025);line-height:1.5}
+.log-t{color:rgba(201,168,76,.4);white-space:nowrap;flex-shrink:0;min-width:56px}
+.log-c.info{color:var(--muted)}
+.log-c.ok{color:var(--green)}
+.log-c.run{color:var(--teal)}
+.log-c.err{color:var(--red)}
+.log-c.pub{color:var(--gold)}
+.log-c.kw{color:var(--purple)}
+.log-empty{color:var(--muted-2);padding:.5rem}
+
+/* KW PILLS */
+.kw-cloud{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.6rem}
+.kw-pill{font-size:.62rem;padding:.2rem .55rem;border-radius:2px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--gold);font-family:var(--font-m)}
+.kw-pill.teal{background:rgba(76,168,168,.08);border-color:rgba(76,168,168,.2);color:var(--teal)}
+.kw-pill.purple{background:rgba(138,108,196,.08);border-color:rgba(138,108,196,.2);color:var(--purple)}
+
+/* CLUSTER MAP */
+.cluster-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-2)}
+.cluster-card{background:var(--dark-3);padding:1.2rem}
+.cluster-parent{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+.cluster-children{list-style:none}
+.cluster-children li{font-size:.72rem;color:var(--muted);padding:.25rem 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;align-items:center;gap:.4rem}
+.cluster-children li::before{content:'↳';color:var(--muted-2);font-size:.65rem}
+.cluster-children li.done{color:var(--green)}
+.cluster-children li.done::before{content:'✓';color:var(--green)}
+
+/* CONTENT EDITOR */
+.editor-tabs{display:flex;border-bottom:1px solid var(--border-2);margin-bottom:1.4rem}
+.e-tab{padding:.6rem 1.2rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-b)}
+.e-tab:hover{color:var(--text)}
+.e-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.editor-area{display:none}
+.editor-area.active{display:block}
+.field-lbl{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.4rem;display:block}
+.f-input{width:100%;background:var(--dark-3);border:1px solid var(--mid);color:var(--text);font-family:var(--font-b);font-size:.82rem;padding:.6rem .8rem;outline:none;transition:border-color .2s;margin-bottom:1rem}
+.f-input:focus{border-color:var(--gold)}
+.rich-ed{width:100%;min-height:140px;background:var(--dark-3);border:1px solid var(--mid);color:var(--text);font-family:var(--font-b);font-size:.82rem;line-height:1.8;padding:.8rem;outline:none;transition:border-color .2s}
+.rich-ed:focus{border-color:var(--gold)}
+.rich-ed p{margin-bottom:.7em}
+.toolbar-row{display:flex;gap:.25rem;flex-wrap:wrap;background:var(--dark-3);border:1px solid var(--mid);border-bottom:none;padding:.4rem .6rem}
+.tb-btn{background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;padding:.25rem .45rem;border-radius:2px;transition:all .12s;font-family:var(--font-b)}
+.tb-btn:hover{background:var(--mid);color:var(--text)}
+.tb-sep{width:1px;height:16px;background:var(--mid);margin:0 .25rem}
+
+/* ACTION ROW */
+.action-row{display:flex;align-items:center;gap:.8rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--border-2);flex-wrap:wrap}
+.action-row .spacer{flex:1}
+.btn-gold{background:var(--gold);color:var(--dark);border:none;font-family:var(--font-b);font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:.65rem 1.6rem;cursor:pointer;transition:background .18s}
+.btn-gold:hover:not(:disabled){background:var(--gold-light)}
+.btn-gold:disabled{background:var(--mid);color:var(--muted);cursor:not-allowed;opacity:.5}
+.btn-outline{background:transparent;border:1px solid var(--mid-2);color:var(--muted);font-family:var(--font-b);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:.62rem 1.2rem;cursor:pointer;transition:all .18s}
+.btn-outline:hover:not(:disabled){border-color:var(--border);color:var(--text)}
+.btn-outline:disabled{opacity:.35;cursor:not-allowed}
+.btn-teal{background:transparent;border:1px solid rgba(76,168,168,.4);color:var(--teal);font-family:var(--font-b);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:.62rem 1.2rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:.4rem}
+.btn-teal:hover:not(:disabled){background:rgba(76,168,168,.08)}
+.btn-teal:disabled{opacity:.35;cursor:not-allowed}
+.success-flash{font-size:.72rem;color:var(--green);display:none;align-items:center;gap:.4rem}
+.success-flash.show{display:flex}
+.success-flash::before{content:'✓'}
+
+/* BLOG BUILDER */
+.blog-form{display:grid;gap:.8rem}
+.blog-preview-card{background:var(--dark-3);border:1px solid var(--border-2);padding:1.2rem;margin-top:1rem}
+.blog-preview-tag{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
+.blog-preview-title{font-family:var(--font-d);font-size:1.1rem;margin-bottom:.5rem;color:var(--text)}
+.blog-preview-excerpt{font-size:.75rem;color:var(--muted);line-height:1.7}
+.blog-list{margin-top:1.2rem}
+.blog-row{display:flex;align-items:center;gap:1rem;padding:.65rem .8rem;background:var(--dark-3);border-bottom:1px solid var(--border-2)}
+.blog-row-title{flex:1;font-size:.75rem;color:var(--text)}
+.blog-row-date{font-size:.62rem;color:var(--muted);white-space:nowrap}
+.blog-row-tag{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.blog-row-del{background:none;border:none;color:var(--muted-2);cursor:pointer;font-size:.85rem;transition:color .15s;padding:.2rem}
+.blog-row-del:hover{color:var(--red)}
+
+/* SCHEMA VIEWER */
+.schema-block{background:var(--dark);border:1px solid var(--border-2);font-family:var(--font-m);font-size:.68rem;color:var(--muted);padding:.8rem 1rem;margin-bottom:.8rem;white-space:pre-wrap;word-break:break-all;max-height:180px;overflow-y:auto;line-height:1.6}
+.schema-block::-webkit-scrollbar{width:3px}
+.schema-block::-webkit-scrollbar-thumb{background:var(--mid)}
+.schema-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.4rem}
+
+/* CONFIDENCE BADGE */
+.conf-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:2px}
+.conf-high{background:rgba(110,201,143,.1);color:var(--green);border:1px solid rgba(110,201,143,.2)}
+.conf-med{background:rgba(212,147,74,.1);color:var(--amber);border:1px solid rgba(212,147,74,.2)}
+.conf-low{background:rgba(217,96,96,.1);color:var(--red);border:1px solid rgba(217,96,96,.2)}
+
+/* SECURITY LOCK */
+.lock-screen{position:fixed;inset:0;background:var(--dark);z-index:900;display:flex;align-items:center;justify-content:center}
+.lock-box{background:var(--dark-2);border:1px solid var(--border);padding:3rem;width:100%;max-width:380px}
+.lock-logo{font-family:var(--font-d);font-size:1.4rem;font-weight:600;color:var(--gold);margin-bottom:.3rem}
+.lock-sub{font-size:.72rem;color:var(--muted);margin-bottom:2.2rem;letter-spacing:.04em}
+.lock-input{width:100%;background:var(--dark-3);border:1px solid var(--mid);color:var(--text);font-family:var(--font-m);font-size:.9rem;padding:.7rem .9rem;outline:none;transition:border-color .2s;margin-bottom:.8rem}
+.lock-input:focus{border-color:var(--gold)}
+.lock-err{font-size:.72rem;color:var(--red);margin-bottom:.8rem;display:none}
+.lock-hint{font-size:.65rem;color:var(--muted-2);margin-top:1.2rem;line-height:1.6}
+.lock-hint code{color:var(--gold);background:var(--dark-3);padding:1px 5px;font-family:var(--font-m)}
+
+/* MEMORY / KNOWLEDGE GRAPH */
+.kg-row{display:flex;gap:.5rem;align-items:flex-start;padding:.55rem .7rem;border-bottom:1px solid var(--border-2);font-size:.7rem}
+.kg-key{color:var(--muted-2);width:140px;flex-shrink:0;font-family:var(--font-m)}
+.kg-val{color:var(--text);flex:1;line-height:1.5;word-break:break-all}
+.kg-meta{color:var(--muted-2);font-size:.62rem;white-space:nowrap}
+
+/* QUALITY REVIEW QUEUE */
+.review-item{background:var(--dark-3);border-left:3px solid var(--amber);padding:1rem 1.2rem;margin-bottom:.6rem}
+.review-item.high{border-left-color:var(--green)}
+.review-item.low{border-left-color:var(--red)}
+.review-title{font-size:.78rem;color:var(--text);margin-bottom:.3rem;font-weight:400}
+.review-meta{font-size:.62rem;color:var(--muted);margin-bottom:.6rem}
+.review-btns{display:flex;gap:.5rem}
+.rv-approve{background:rgba(110,201,143,.1);border:1px solid rgba(110,201,143,.25);color:var(--green);font-family:var(--font-b);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;cursor:pointer;transition:all .18s}
+.rv-approve:hover{background:rgba(110,201,143,.2)}
+.rv-reject{background:rgba(217,96,96,.08);border:1px solid rgba(217,96,96,.2);color:var(--red);font-family:var(--font-b);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;cursor:pointer;transition:all .18s}
+.rv-reject:hover{background:rgba(217,96,96,.15)}
+
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--dark-2);border-top:1px solid var(--border);padding:.4rem 0 .5rem}
+.mob-nav-scroll{display:flex;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mob-nav-scroll::-webkit-scrollbar{display:none}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:.18rem;padding:.4rem .85rem;cursor:pointer;flex-shrink:0;border-bottom:2px solid transparent;transition:all .15s;min-width:64px}
+.mob-nav-item.active{border-bottom-color:var(--gold)}
+.mob-nav-item.active .mob-nav-icon{color:var(--gold)}
+.mob-nav-item.active .mob-nav-label{color:var(--gold)}
+.mob-nav-icon{font-size:1.1rem;line-height:1}
+.mob-nav-label{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.mob-nav-item.highlight .mob-nav-icon{color:var(--teal)}
+.mob-nav-item.highlight .mob-nav-label{color:var(--teal)}
+
+/* MOBILE API KEY BAR */
+.mob-key-bar{display:none;background:var(--dark-3);border-bottom:1px solid rgba(76,168,168,.2);padding:.7rem 1rem;gap:.5rem;align-items:center}
+.mob-key-bar input{flex:1;background:var(--dark);border:1px solid var(--mid);color:var(--text);font-family:var(--font-m);font-size:.75rem;padding:.45rem .7rem;outline:none}
+.mob-key-bar input:focus{border-color:var(--teal)}
+.mob-key-bar button{background:rgba(76,168,168,.15);border:1px solid rgba(76,168,168,.3);color:var(--teal);font-family:var(--font-b);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem .8rem;cursor:pointer;white-space:nowrap}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .mob-nav{display:block}
+  .mob-key-bar{display:flex}
+  .main{padding-bottom:80px}
+  .panel{padding:1.2rem 1rem}
+  .card-grid.cols-2,.card-grid.cols-3,.card-grid.cols-4{grid-template-columns:1fr}
+  .cluster-grid{grid-template-columns:1fr}
+  .pipeline{grid-template-columns:repeat(3,1fr)}
+  .topbar{padding:0 1rem}
+  .topbar-badge{display:none}
+  .sched-row{flex-direction:column;align-items:flex-start;gap:.6rem}
+  .action-row{flex-direction:column;align-items:stretch}
+  .action-row .btn-gold,.action-row .btn-outline,.action-row .btn-teal{text-align:center;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-logo">Trio Nexus</div>
+    <div class="lock-sub">SEO Operating System — Secure Access</div>
+    <input class="lock-input" type="password" id="lockPwd" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')unlock()">
+    <div class="lock-err" id="lockErr">Incorrect password. Try again.</div>
+    <button class="btn-gold" style="width:100%;padding:.8rem" onclick="unlock()">Access SEO OS</button>
+    <div class="lock-hint">Default: <code>trio2024</code> — Change in Security panel after login.</div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-logo">Trio<span> Nexus</span></span>
+  <span class="topbar-badge">SEO OS v2.0</span>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-status">
+    <div class="status-dot" id="topDot"></div>
+    <span id="topStatus">Idle</span>
+  </div>
+  <button class="topbar-btn" onclick="window.location='/'">← Live Site</button>
+  <button class="topbar-btn danger" onclick="lockOut()">Lock</button>
+</div>
+
+<!-- MOBILE API KEY BAR -->
+<div class="mob-key-bar" id="mobKeyBar">
+  <input type="password" id="mobKeyInput" placeholder="Paste Gemini API key (AIza...)">
+  <button onclick="saveMobKey()">Save Key</button>
+  <span id="mobKeyStatus" style="font-size:.65rem;color:var(--muted);white-space:nowrap"></span>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mob-nav" id="mobNav">
+  <div class="mob-nav-scroll">
+    <div class="mob-nav-item active" onclick="mobNav('dashboard',this)">
+      <div class="mob-nav-icon">◈</div><div class="mob-nav-label">Dashboard</div>
+    </div>
+    <div class="mob-nav-item highlight" onclick="mobNav('scheduler',this)">
+      <div class="mob-nav-icon">⏱</div><div class="mob-nav-label">Scheduler</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('editor',this)">
+      <div class="mob-nav-icon">✎</div><div class="mob-nav-label">Editor</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('blog',this)">
+      <div class="mob-nav-icon">📝</div><div class="mob-nav-label">Blog</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('faqs',this)">
+      <div class="mob-nav-icon">❓</div><div class="mob-nav-label">FAQs</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('keywords',this)">
+      <div class="mob-nav-icon">🔍</div><div class="mob-nav-label">Keywords</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('clusters',this)">
+      <div class="mob-nav-icon">❋</div><div class="mob-nav-label">Clusters</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('review',this)">
+      <div class="mob-nav-icon">◉</div><div class="mob-nav-label">Review</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('schema',this)">
+      <div class="mob-nav-icon">{ }</div><div class="mob-nav-label">Schema</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('memory',this)">
+      <div class="mob-nav-icon">🧠</div><div class="mob-nav-label">Memory</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('technical',this)">
+      <div class="mob-nav-icon">⚙</div><div class="mob-nav-label">Technical</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('security',this)">
+      <div class="mob-nav-icon">🔒</div><div class="mob-nav-label">Security</div>
+    </div>
+    <div class="mob-nav-item" onclick="mobNav('log',this)">
+      <div class="mob-nav-icon">⌘</div><div class="mob-nav-label">Log</div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main</div>
+    <div class="nav-item active" onclick="showPanel('dashboard',this)"><span class="nav-icon">◈</span><span class="nav-label">Dashboard</span></div>
+    <div class="nav-item" onclick="showPanel('scheduler',this)"><span class="nav-icon">⏱</span><span class="nav-label">Auto Scheduler</span></div>
+    <div class="nav-item" onclick="showPanel('log',this)"><span class="nav-icon">⌘</span><span class="nav-label">Activity Log</span></div>
+
+    <div class="sidebar-section">Content</div>
+    <div class="nav-item" onclick="showPanel('editor',this)"><span class="nav-icon">✎</span><span class="nav-label">Content Editor</span></div>
+    <div class="nav-item" onclick="showPanel('blog',this)"><span class="nav-icon">◻</span><span class="nav-label">Blog Publisher</span><span class="nav-badge" id="blogBadge">0</span></div>
+    <div class="nav-item" onclick="showPanel('faqs',this)"><span class="nav-icon">?</span><span class="nav-label">FAQ Manager</span></div>
+    <div class="nav-item" onclick="showPanel('review',this)"><span class="nav-icon">◉</span><span class="nav-label">Review Queue</span><span class="nav-badge" id="reviewBadge">0</span></div>
+
+    <div class="sidebar-section">SEO Intelligence</div>
+    <div class="nav-item" onclick="showPanel('keywords',this)"><span class="nav-icon">◆</span><span class="nav-label">Keyword Research</span></div>
+    <div class="nav-item" onclick="showPanel('clusters',this)"><span class="nav-icon">❋</span><span class="nav-label">Topic Clusters</span></div>
+    <div class="nav-item" onclick="showPanel('schema',this)"><span class="nav-icon">{ }</span><span class="nav-label">Schema Generator</span></div>
+    <div class="nav-item" onclick="showPanel('memory',this)"><span class="nav-icon">◈</span><span class="nav-label">SEO Memory</span></div>
+
+    <div class="sidebar-section">Technical</div>
+    <div class="nav-item" onclick="showPanel('technical',this)"><span class="nav-icon">⚙</span><span class="nav-label">Technical SEO</span></div>
+    <div class="nav-item" onclick="showPanel('security',this)"><span class="nav-icon">⛒</span><span class="nav-label">Security</span></div>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-key-wrap">
+        <div class="sidebar-key-label">Gemini API Key</div>
+        <input class="sidebar-key-input" type="password" id="sidebarKey" placeholder="AIza...">
+        <div class="sidebar-key-row">
+          <button class="sk-btn" onclick="saveKey()">Save</button>
+          <a class="sk-btn" style="text-align:center;text-decoration:none" href="https://aistudio.google.com/app/apikey" target="_blank">Get Key ↗</a>
+        </div>
+        <div class="key-saved" id="keySaved">✓ Key saved</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="panel-hdr">
+        <div class="panel-title">Dashboard</div>
+        <div class="panel-sub">Autonomous SEO & AEO operating system — Trio Nexus, Lahore</div>
+      </div>
+
+      <div class="card-grid cols-4" style="margin-bottom:1px">
+        <div class="os-card stat-card"><div class="stat-val" id="dash-kw">0</div><div class="stat-lbl">Keywords Tracked</div><div class="stat-delta" id="dash-kw-d">+0 this week</div></div>
+        <div class="os-card stat-card"><div class="stat-val" id="dash-blog">0</div><div class="stat-lbl">Blog Posts</div></div>
+        <div class="os-card stat-card"><div class="stat-val" id="dash-faq">0</div><div class="stat-lbl">FAQs Published</div></div>
+        <div class="os-card stat-card"><div class="stat-val" id="dash-runs">0</div><div class="stat-lbl">AI Runs Total</div></div>
+      </div>
+
+      <div class="card-grid cols-2" style="margin-bottom:1px">
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem">Auto Scheduler Status</div>
+          <div id="dashSchedStatus" style="font-size:.75rem;color:var(--muted);line-height:1.7">Loading...</div>
+          <div class="pipeline" id="dashPipeline" style="margin-top:1rem">
+            <div class="pipe-step" id="ps0"><span class="pipe-step-icon">🔍</span><div class="pipe-step-label">Keywords</div></div>
+            <div class="pipe-step" id="ps1"><span class="pipe-step-icon">⚡</span><div class="pipe-step-label">Rewrite</div></div>
+            <div class="pipe-step" id="ps2"><span class="pipe-step-icon">📝</span><div class="pipe-step-label">Blog</div></div>
+            <div class="pipe-step" id="ps3"><span class="pipe-step-icon">❓</span><div class="pipe-step-label">FAQs</div></div>
+            <div class="pipe-step" id="ps4"><span class="pipe-step-icon">🚀</span><div class="pipe-step-label">Publish</div></div>
+          </div>
+        </div>
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem">Recent Keywords Found</div>
+          <div class="kw-cloud" id="dashKwCloud"><span style="font-size:.68rem;color:var(--muted-2)">Run optimizer to populate keywords...</span></div>
+        </div>
+      </div>
+
+      <div class="os-card" style="margin-top:1px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+          <span style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">Live Activity</span>
+          <button class="btn-outline" style="font-size:.6rem;padding:.3rem .6rem" onclick="showPanel('log',document.querySelector('.nav-item:nth-child(3)'))">View All →</button>
+        </div>
+        <div class="log-wrap" id="dashLog"><div class="log-empty">No activity yet.</div></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULER -->
+    <div class="panel" id="panel-scheduler">
+      <div class="panel-hdr">
+        <div class="panel-title">Auto Scheduler</div>
+        <div class="panel-sub">Fully autonomous — runs without any user interaction</div>
+      </div>
+
+      <div class="sched-card">
+        <div class="sched-row">
+          <span class="sched-label">⏱ Auto SEO Optimizer</span>
+          <label class="toggle"><input type="checkbox" id="schedToggle" onchange="toggleSched()"><div class="t-track"></div><div class="t-thumb"></div></label>
+          <span style="font-size:.68rem;color:var(--muted)" id="schedTglLabel">OFF</span>
+          <select class="sched-select" id="schedInterval" onchange="saveInterval()">
+            <option value="3600000">Every 1 Hour</option>
+            <option value="1800000">Every 30 Min</option>
+            <option value="7200000">Every 2 Hours</option>
+            <option value="21600000">Every 6 Hours</option>
+            <option value="86400000">Every 24 Hours</option>
+          </select>
+          <button class="run-btn" id="runNowBtn" onclick="runNow()"><span>▶</span> Run All Now</button>
+        </div>
+        <div class="next-info" id="nextRunInfo">Scheduler is off.</div>
+      </div>
+
+      <div class="os-card" style="margin-bottom:1px">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">What happens each run:</div>
+        <div class="pipeline" id="schedPipeline">
+          <div class="pipe-step" id="sps0"><span class="pipe-step-icon">🔍</span><div class="pipe-step-label">Keyword<br>Research</div></div>
+          <div class="pipe-step" id="sps1"><span class="pipe-step-icon">⚡</span><div class="pipe-step-label">Content<br>Rewrite</div></div>
+          <div class="pipe-step" id="sps2"><span class="pipe-step-icon">📝</span><div class="pipe-step-label">Blog<br>Article</div></div>
+          <div class="pipe-step" id="sps3"><span class="pipe-step-icon">❓</span><div class="pipe-step-label">FAQ<br>Update</div></div>
+          <div class="pipe-step" id="sps4"><span class="pipe-step-icon">🚀</span><div class="pipe-step-label">Auto<br>Publish</div></div>
+        </div>
+      </div>
+
+      <div class="os-card">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;display:flex;justify-content:space-between"><span>Run Log</span><button class="btn-outline" style="font-size:.6rem;padding:.25rem .55rem" onclick="clearLog()">Clear</button></div>
+        <div class="log-wrap" id="schedLog"><div class="log-empty">No runs yet.</div></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="panel" id="panel-log">
+      <div class="panel-hdr"><div class="panel-title">Activity Log</div><div class="panel-sub">Full audit trail of all SEO OS operations</div></div>
+      <div class="os-card">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:.6rem"><button class="btn-outline" style="font-size:.62rem;padding:.3rem .65rem" onclick="clearLog()">Clear Log</button></div>
+        <div class="log-wrap" id="fullLog" style="height:500px"><div class="log-empty">No activity yet.</div></div>
+      </div>
+    </div>
+
+    <!-- CONTENT EDITOR -->
+    <div class="panel" id="panel-editor">
+      <div class="panel-hdr"><div class="panel-title">Content Editor</div><div class="panel-sub">Edit, AI-optimise, and publish service descriptions</div></div>
+
+      <div class="editor-tabs">
+        <button class="e-tab active" onclick="selEditorTab('law',this)">⚖ Law</button>
+        <button class="e-tab" onclick="selEditorTab('study',this)">🎓 Study Abroad</button>
+        <button class="e-tab" onclick="selEditorTab('hr',this)">💼 HR Services</button>
+      </div>
+
+      <!-- LAW -->
+      <div class="editor-area active" id="ea-law">
+        <label class="field-lbl">Service Title</label>
+        <input class="f-input" type="text" id="et-law" value="Trio Law Consultants">
+        <label class="field-lbl">Content</label>
+        <div class="toolbar-row">
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('bold','law')"><b>B</b></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('italic','law')"><i>I</i></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('underline','law')"><u>U</u></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('h3','law')">H3</button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('ul','law')">• List</button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('removeFormat','law')">✕</button>
+        </div>
+        <div class="rich-ed" id="ec-law" contenteditable="true" oninput="edChanged('law')"></div>
+        <div class="optimizer-box" id="ob-law" style="margin-top:.8rem;background:var(--dark);border:1px solid rgba(76,168,168,.15);padding:1rem;display:none">
+          <ul id="os-law" style="list-style:none"></ul>
+          <div id="kf-law" style="display:none;margin-top:.6rem"></div>
+        </div>
+        <div class="action-row">
+          <div class="success-flash" id="sf-law">Published!</div>
+          <div class="spacer"></div>
+          <button class="btn-outline" onclick="resetEditor('law')">Reset</button>
+          <button class="btn-teal" id="optBtn-law" onclick="manualOptimize('law')"><span id="obi-law">✦</span> Optimize</button>
+          <button class="btn-gold" id="pubBtn-law" onclick="publishService('law',false)" disabled>Publish</button>
+        </div>
+      </div>
+
+      <!-- STUDY -->
+      <div class="editor-area" id="ea-study">
+        <label class="field-lbl">Service Title</label>
+        <input class="f-input" type="text" id="et-study" value="Trio Study Abroad">
+        <label class="field-lbl">Content</label>
+        <div class="toolbar-row">
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('bold','study')"><b>B</b></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('italic','study')"><i>I</i></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('underline','study')"><u>U</u></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('h3','study')">H3</button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('ul','study')">• List</button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('removeFormat','study')">✕</button>
+        </div>
+        <div class="rich-ed" id="ec-study" contenteditable="true" oninput="edChanged('study')"></div>
+        <div class="optimizer-box" id="ob-study" style="margin-top:.8rem;background:var(--dark);border:1px solid rgba(76,168,168,.15);padding:1rem;display:none">
+          <ul id="os-study" style="list-style:none"></ul>
+          <div id="kf-study" style="display:none;margin-top:.6rem"></div>
+        </div>
+        <div class="action-row">
+          <div class="success-flash" id="sf-study">Published!</div>
+          <div class="spacer"></div>
+          <button class="btn-outline" onclick="resetEditor('study')">Reset</button>
+          <button class="btn-teal" id="optBtn-study" onclick="manualOptimize('study')"><span id="obi-study">✦</span> Optimize</button>
+          <button class="btn-gold" id="pubBtn-study" onclick="publishService('study',false)" disabled>Publish</button>
+        </div>
+      </div>
+
+      <!-- HR -->
+      <div class="editor-area" id="ea-hr">
+        <label class="field-lbl">Service Title</label>
+        <input class="f-input" type="text" id="et-hr" value="Trio HR Services">
+        <label class="field-lbl">Content</label>
+        <div class="toolbar-row">
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('bold','hr')"><b>B</b></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('italic','hr')"><i>I</i></button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('underline','hr')"><u>U</u></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('h3','hr')">H3</button>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('ul','hr')">• List</button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onmousedown="event.preventDefault();tfmt('removeFormat','hr')">✕</button>
+        </div>
+        <div class="rich-ed" id="ec-hr" contenteditable="true" oninput="edChanged('hr')"></div>
+        <div class="optimizer-box" id="ob-hr" style="margin-top:.8rem;background:var(--dark);border:1px solid rgba(76,168,168,.15);padding:1rem;display:none">
+          <ul id="os-hr" style="list-style:none"></ul>
+          <div id="kf-hr" style="display:none;margin-top:.6rem"></div>
+        </div>
+        <div class="action-row">
+          <div class="success-flash" id="sf-hr">Published!</div>
+          <div class="spacer"></div>
+          <button class="btn-outline" onclick="resetEditor('hr')">Reset</button>
+          <button class="btn-teal" id="optBtn-hr" onclick="manualOptimize('hr')"><span id="obi-hr">✦</span> Optimize</button>
+          <button class="btn-gold" id="pubBtn-hr" onclick="publishService('hr',false)" disabled>Publish</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOG PUBLISHER -->
+    <div class="panel" id="panel-blog">
+      <div class="panel-hdr"><div class="panel-title">Blog Publisher</div><div class="panel-sub">AI-generated articles published on a natural schedule</div></div>
+
+      <div class="card-grid cols-2" style="margin-bottom:1px">
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Generate New Article</div>
+          <div class="blog-form">
+            <div>
+              <label class="field-lbl">Topic / Title Idea</label>
+              <input class="f-input" type="text" id="blogTopicInput" placeholder="e.g. Poland Student Visa Guide for Pakistanis" style="margin-bottom:0">
+            </div>
+            <div>
+              <label class="field-lbl">Category</label>
+              <select class="sched-select" id="blogCat" style="width:100%">
+                <option>Legal</option>
+                <option>Study Abroad</option>
+                <option>HR</option>
+                <option>Insights</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-lbl">Type</label>
+              <select class="sched-select" id="blogType" style="width:100%">
+                <option value="micro">Micro FAQ (200-400 words)</option>
+                <option value="article">Blog Article (600-900 words)</option>
+                <option value="guide">Authority Guide (1000+ words)</option>
+              </select>
+            </div>
+          </div>
+          <div class="action-row" style="margin-top:.8rem;padding-top:.8rem">
+            <div class="success-flash" id="blogFlash">Article published!</div>
+            <div class="spacer"></div>
+            <button class="btn-teal" id="genBlogBtn" onclick="generateBlogPost()"><span id="genBlogIcon">✦</span> AI Generate & Publish</button>
+          </div>
+          <div id="blogGenProgress" style="margin-top:.8rem;display:none">
+            <ul id="blogGenSteps" style="list-style:none"></ul>
+          </div>
+        </div>
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Preview</div>
+          <div class="blog-preview-card" id="blogPreviewCard" style="display:none"></div>
+          <div id="blogPreviewEmpty" style="font-size:.72rem;color:var(--muted-2)">Generate an article to see preview...</div>
+        </div>
+      </div>
+
+      <div class="os-card" style="margin-top:1px">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center">
+          <span>Published Articles</span>
+          <span id="blogCount" style="color:var(--gold);font-family:var(--font-m)">0</span>
+        </div>
+        <div id="blogListEl"><div style="font-size:.7rem;color:var(--muted-2);padding:.5rem">No articles yet.</div></div>
+      </div>
+    </div>
+
+    <!-- FAQ MANAGER -->
+    <div class="panel" id="panel-faqs">
+      <div class="panel-hdr"><div class="panel-title">FAQ Manager</div><div class="panel-sub">AEO-optimised questions for AI answer engines</div></div>
+      <div class="card-grid cols-2" style="margin-bottom:1px">
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Add / Generate FAQ</div>
+          <label class="field-lbl">Question</label>
+          <input class="f-input" type="text" id="faqQ" placeholder="e.g. How do I apply for a student visa from Pakistan?">
+          <label class="field-lbl">Answer</label>
+          <textarea class="rich-ed" id="faqA" style="min-height:90px;resize:vertical" placeholder="Answer..."></textarea>
+          <div class="action-row" style="margin-top:.8rem;padding-top:.8rem">
+            <button class="btn-teal" onclick="aiFAQ()"><span>✦</span> AI Generate Answer</button>
+            <div class="spacer"></div>
+            <button class="btn-gold" onclick="addFAQ()">Add FAQ</button>
+          </div>
+        </div>
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Current FAQs (<span id="faqTotal">0</span>)</div>
+          <div id="faqListEl" style="max-height:280px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW QUEUE -->
+    <div class="panel" id="panel-review">
+      <div class="panel-hdr"><div class="panel-title">Review Queue</div><div class="panel-sub">Quality control — medium/low confidence content awaiting approval</div></div>
+      <div class="os-card">
+        <div id="reviewList"><div style="font-size:.72rem;color:var(--muted-2);padding:.5rem">No items in queue. High-confidence content is auto-published.</div></div>
+      </div>
+    </div>
+
+    <!-- KEYWORD RESEARCH -->
+    <div class="panel" id="panel-keywords">
+      <div class="panel-hdr"><div class="panel-title">Keyword Research</div><div class="panel-sub">Long-tail & semantic keyword discovery via free sources</div></div>
+      <div class="card-grid cols-2" style="margin-bottom:1px">
+        <div class="os-card">
+          <label class="field-lbl">Seed Keyword</label>
+          <div style="display:flex;gap:.5rem">
+            <input class="f-input" type="text" id="kwSeed" placeholder="e.g. study abroad Pakistan" style="flex:1;margin-bottom:0">
+            <button class="btn-teal" id="kwResBtn" onclick="runKwResearch()"><span id="kwResIcon">✦</span> Research</button>
+          </div>
+          <div style="margin-top:1rem;font-size:.62rem;color:var(--muted-2)">Sources: Gemini AI + autocomplete patterns + intent analysis</div>
+        </div>
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.6rem">Service Quick Research</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <button class="btn-outline" style="text-align:left;font-size:.68rem;padding:.5rem .8rem" onclick="quickResearch('law consultancy Pakistan')">⚖ Law Keywords</button>
+            <button class="btn-outline" style="text-align:left;font-size:.68rem;padding:.5rem .8rem" onclick="quickResearch('study abroad Pakistan student visa')">🎓 Study Abroad Keywords</button>
+            <button class="btn-outline" style="text-align:left;font-size:.68rem;padding:.5rem .8rem" onclick="quickResearch('HR services Pakistan recruitment')">💼 HR Keywords</button>
+          </div>
+        </div>
+      </div>
+      <div class="os-card" style="margin-top:1px">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem">Keywords Found</div>
+        <div id="kwResults"><div style="font-size:.7rem;color:var(--muted-2)">Run research to see keywords...</div></div>
+        <div style="margin-top:1rem">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">All Tracked Keywords (<span id="kwTotal">0</span>)</div>
+          <div class="kw-cloud" id="kwAllCloud"><span style="font-size:.68rem;color:var(--muted-2)">No keywords yet.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOPIC CLUSTERS -->
+    <div class="panel" id="panel-clusters">
+      <div class="panel-hdr"><div class="panel-title">Topic Clusters</div><div class="panel-sub">Semantic topical authority map — auto-expanded by AI</div></div>
+      <div style="display:flex;gap:.8rem;margin-bottom:1.2rem;align-items:center;flex-wrap:wrap">
+        <button class="btn-teal" onclick="generateClusters()"><span id="clusterIcon">✦</span> AI Generate Clusters</button>
+        <span style="font-size:.65rem;color:var(--muted)">Generates topical sub-clusters for all 3 services</span>
+      </div>
+      <div class="cluster-grid" id="clusterGrid">
+        <div class="os-card" style="grid-column:1/-1;text-align:center;color:var(--muted-2);font-size:.72rem">Click "AI Generate Clusters" to build your topical authority map.</div>
+      </div>
+    </div>
+
+    <!-- SCHEMA GENERATOR -->
+    <div class="panel" id="panel-schema">
+      <div class="panel-hdr"><div class="panel-title">Schema Generator</div><div class="panel-sub">Structured data for Google, AI crawlers, and knowledge graphs</div></div>
+      <div style="display:flex;gap:.6rem;margin-bottom:1.2rem;flex-wrap:wrap">
+        <button class="btn-teal" onclick="genSchema('faq')">Generate FAQ Schema</button>
+        <button class="btn-teal" onclick="genSchema('org')">Org Schema</button>
+        <button class="btn-teal" onclick="genSchema('service')">Service Schema</button>
+        <button class="btn-teal" onclick="genSchema('breadcrumb')">Breadcrumb Schema</button>
+        <button class="btn-outline" onclick="copySchema()">Copy All</button>
+      </div>
+      <div id="schemaOutput"></div>
+      <div class="os-card" style="margin-top:1px">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.6rem">Generated Files</div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:2">
+          <div>📄 <span style="color:var(--gold)">sitemap.xml</span> — auto-regenerated on each publish</div>
+          <div>📄 <span style="color:var(--gold)">robots.txt</span> — SEO-optimised crawler rules</div>
+          <div>📄 <span style="color:var(--gold)">schema.jsonld</span> — full organization + service + FAQ schema</div>
+        </div>
+        <div class="action-row" style="margin-top:1rem;padding-top:1rem">
+          <button class="btn-gold" onclick="generateSitemap()">Generate sitemap.xml</button>
+          <button class="btn-outline" onclick="generateRobots()">Generate robots.txt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO MEMORY -->
+    <div class="panel" id="panel-memory">
+      <div class="panel-hdr"><div class="panel-title">SEO Memory</div><div class="panel-sub">Semantic knowledge graph — prevents duplication and tracks authority</div></div>
+      <div class="card-grid cols-3" style="margin-bottom:1px">
+        <div class="os-card stat-card"><div class="stat-val" id="mem-kw">0</div><div class="stat-lbl">Keywords Used</div></div>
+        <div class="os-card stat-card"><div class="stat-val" id="mem-faq">0</div><div class="stat-lbl">FAQs Created</div></div>
+        <div class="os-card stat-card"><div class="stat-val" id="mem-runs">0</div><div class="stat-lbl">Total AI Runs</div></div>
+      </div>
+      <div class="os-card" style="margin-top:1px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+          <span style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">Knowledge Graph</span>
+          <button class="btn-outline" style="font-size:.6rem;padding:.25rem .6rem" onclick="clearMemory()">Reset Memory</button>
+        </div>
+        <div id="memoryTable" style="border:1px solid var(--border-2)"></div>
+      </div>
+    </div>
+
+    <!-- TECHNICAL SEO -->
+    <div class="panel" id="panel-technical">
+      <div class="panel-hdr"><div class="panel-title">Technical SEO</div><div class="panel-sub">Meta tags, canonical, OG, Twitter cards — auto-managed</div></div>
+      <div class="card-grid cols-2" style="margin-bottom:1px">
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Meta Tags</div>
+          <label class="field-lbl">Page Title (max 60 chars)</label>
+          <input class="f-input" type="text" id="metaTitle" placeholder="Trio Nexus | ...">
+          <label class="field-lbl">Meta Description (max 160 chars)</label>
+          <textarea class="rich-ed" id="metaDesc" style="min-height:60px;resize:none" placeholder="Page description..."></textarea>
+          <label class="field-lbl" style="margin-top:.8rem">Focus Keyword</label>
+          <input class="f-input" type="text" id="metaFocus" placeholder="e.g. law consultants Pakistan">
+          <button class="btn-gold" style="margin-top:.4rem" onclick="saveMeta()">Save & Inject Meta</button>
+        </div>
+        <div class="os-card">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.8rem">Current Meta Preview</div>
+          <div style="background:var(--dark);padding:.8rem;font-size:.7rem;line-height:2;font-family:var(--font-m);color:var(--muted)">
+            <div><span style="color:var(--blue)">&lt;title&gt;</span> <span id="previewTitle" style="color:var(--text)">—</span></div>
+            <div><span style="color:var(--blue)">&lt;description&gt;</span> <span id="previewDesc" style="color:var(--text)">—</span></div>
+            <div><span style="color:var(--blue)">&lt;canonical&gt;</span> <span style="color:var(--green)">https://www.trionexus.org/</span></div>
+          </div>
+          <div style="margin-top:1rem;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.5rem">Performance Checklist</div>
+          <div id="techChecklist" style="font-size:.7rem;color:var(--muted);line-height:2.2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="panel" id="panel-security">
+      <div class="panel-hdr"><div class="panel-title">Security</div><div class="panel-sub">Manage access credentials and session protection</div></div>
+      <div class="os-card" style="max-width:420px">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:1rem">Change Admin Password</div>
+        <label class="field-lbl">Current Password</label>
+        <input class="f-input" type="password" id="secCurrent" placeholder="Current password">
+        <label class="field-lbl">New Password</label>
+        <input class="f-input" type="password" id="secNew" placeholder="New password (min 8 chars)">
+        <label class="field-lbl">Confirm New Password</label>
+        <input class="f-input" type="password" id="secConfirm" placeholder="Confirm new password">
+        <div id="secMsg" style="font-size:.72rem;margin-bottom:.6rem;display:none"></div>
+        <button class="btn-gold" onclick="changePwd()">Update Password</button>
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border-2)">
+          <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.6rem">Session</div>
+          <button class="btn-outline" onclick="lockOut()" style="color:var(--red);border-color:rgba(217,96,96,.3)">Lock & Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  TRIO NEXUS — SEO OPERATING SYSTEM v2.0
+// ════════════════════════════════════════════
+
+const SERVICE_META = {
+  law:   { name:'Trio Law Consultants',  niche:'legal consultancy, corporate law, contract drafting, dispute resolution, regulatory compliance Pakistan', audience:'individuals and businesses in Pakistan needing legal advisory services' },
+  study: { name:'Trio Study Abroad',     niche:'study abroad consultancy, overseas education, university admissions, student visa Pakistan, scholarship guidance', audience:'Pakistani students seeking international education in Europe USA Australia Canada' },
+  hr:    { name:'Trio HR Services',      niche:'HR management, talent acquisition, executive search, payroll, workforce planning Pakistan', audience:'growing companies in Pakistan needing HR solutions' }
+};
+
+let ADMIN_PWD = localStorage.getItem('admin_pwd') || 'trio2024';
+let schedTimer = null, countTimer = null, nextRun = null;
+let isRunning = false, activeEditorTab = 'law';
+const STEPS = ['Keyword Research','Content Rewrite','Blog Article','FAQ Update','Publishing'];
+
+/* ══════════ LOCK SCREEN ══════════ */
+function unlock(){
+  const v = document.getElementById('lockPwd').value;
+  if(v === ADMIN_PWD){
+    document.getElementById('lockScreen').style.display='none';
+    init();
+  } else {
+    document.getElementById('lockErr').style.display='block';
+    document.getElementById('lockPwd').value='';
+    document.getElementById('lockPwd').focus();
+  }
+}
+function lockOut(){ document.getElementById('lockScreen').style.display='flex'; document.getElementById('lockPwd').value=''; }
+document.getElementById('lockPwd').addEventListener('keydown',e=>{ if(e.key==='Enter')unlock(); });
+
+/* ══════════ INIT ══════════ */
+function init(){
+  loadEditorContent();
+  updateKeyUI();
+  updateMobKeyUI();
+  restoreSched();
+  renderBlogList();
+  renderFAQList();
+  renderMemory();
+  renderKwCloud();
+  updateDash();
+  loadTechMeta();
+  loadLog();
+  renderReviewQueue();
+  setInterval(updateDash,5000);
+  setInterval(syncTopBar,1000);
+}
+
+/* ══════════ NAV ══════════ */
+function showPanel(id, el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  if(id==='memory') renderMemory();
+  if(id==='keywords') renderKwCloud();
+  if(id==='clusters') renderClusters();
+  if(id==='schema') renderSchemas();
+  if(id==='technical') loadTechMeta();
+  if(id==='review') renderReviewQueue();
+}
+
+/* ══════════ API KEY ══════════ */
+function saveKey(){
+  const k=document.getElementById('sidebarKey').value.trim();
+  if(!k||!k.startsWith('AIza')){alert('Enter a valid Gemini key (AIza...)');return;}
+  localStorage.setItem('gemini_api_key',k);
+  updateKeyUI();
+  addLog('ok','Gemini API key saved successfully.');
+}
+function updateKeyUI(){
+  const k=localStorage.getItem('gemini_api_key');
+  const s=document.getElementById('keySaved');
+  if(k){s.style.display='block';document.getElementById('sidebarKey').value=k.substring(0,8)+'•••••••••••••';}
+  else s.style.display='none';
+}
+function getKey(){ return localStorage.getItem('gemini_api_key'); }
+
+/* ══════════ GEMINI ══════════ */
+async function callGemini(prompt, maxTokens=1024){
+  const key=getKey();
+  if(!key) throw new Error('No API key. Save your Gemini key in the sidebar.');
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`;
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:.75,maxOutputTokens:maxTokens}})});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'API error '+res.status);}
+  const data=await res.json();
+  const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!text) throw new Error('Empty Gemini response');
+  return text;
+}
+
+/* ══════════ LOG ══════════ */
+function addLog(type,msg){
+  const time=new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const saved=JSON.parse(localStorage.getItem('activity_log')||'[]');
+  saved.unshift({type,msg,time});
+  if(saved.length>80) saved.length=80;
+  localStorage.setItem('activity_log',JSON.stringify(saved));
+  renderLogEl(document.getElementById('dashLog'),saved.slice(0,8));
+  renderLogEl(document.getElementById('schedLog'),saved.slice(0,20));
+  renderLogEl(document.getElementById('fullLog'),saved);
+}
+function renderLogEl(el,data){
+  if(!el) return;
+  if(!data.length){el.innerHTML='<div class="log-empty">No activity.</div>';return;}
+  el.innerHTML=data.map(l=>`<div class="log-ln"><span class="log-t">${l.time}</span><span class="log-c ${l.type}">${l.msg}</span></div>`).join('');
+}
+function loadLog(){
+  const saved=JSON.parse(localStorage.getItem('activity_log')||'[]');
+  renderLogEl(document.getElementById('dashLog'),saved.slice(0,8));
+  renderLogEl(document.getElementById('schedLog'),saved.slice(0,20));
+  renderLogEl(document.getElementById('fullLog'),saved);
+}
+function clearLog(){
+  localStorage.removeItem('activity_log');
+  ['dashLog','schedLog','fullLog'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<div class="log-empty">No activity yet.</div>';});
+  addLog('info','Log cleared.');
+}
+
+/* ══════════ EDITOR ══════════ */
+function loadEditorContent(){
+  ['law','study','hr'].forEach(s=>{
+    const t=localStorage.getItem('title-'+s), d=localStorage.getItem('desc-'+s);
+    if(t) document.getElementById('et-'+s).value=t;
+    const content=d||document.getElementById('ec-'+s).innerHTML;
+    if(d) document.getElementById('ec-'+s).innerHTML=d;
+    else document.getElementById('ec-'+s).innerHTML=getDefaultContent(s);
+    lockPub(s);
+  });
+}
+function getDefaultContent(s){
+  const defaults={
+    law:'<p>Expert legal advisory services tailored for individuals and businesses navigating complex matters. Our seasoned consultants provide strategic counsel on corporate law, contract drafting, dispute resolution, and regulatory compliance.</p><p>We deliver clarity in complexity — helping you make informed decisions with full legal confidence.</p>',
+    study:'<p>Your gateway to world-class education across Europe, North America, Australia, and Asia. We guide students from university selection and application through visa processing, scholarship identification, and pre-departure support.</p><p>Every student deserves a future without borders — we make that journey seamless and certain.</p>',
+    hr:'<p>End-to-end human resource solutions for growing organisations. From talent acquisition and executive search to HR policy design, payroll management, and workforce planning — we build the people infrastructure your business needs.</p><p>Strong teams are built intentionally. We help you attract, develop, and retain exceptional talent.</p>'
+  };
+  return defaults[s]||'';
+}
+function selEditorTab(s,btn){
+  activeEditorTab=s;
+  document.querySelectorAll('.e-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.editor-area').forEach(a=>a.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ea-'+s).classList.add('active');
+  document.getElementById('sf-'+s).classList.remove('show');
+  lockPub(s);
+}
+function tfmt(cmd,s){
+  const el=document.getElementById('ec-'+s); el.focus();
+  if(cmd==='h3') document.execCommand('formatBlock',false,'h3');
+  else if(cmd==='ul') document.execCommand('insertUnorderedList');
+  else document.execCommand(cmd);
+}
+function edChanged(s){ lockPub(s); }
+function lockPub(s){ document.getElementById('pubBtn-'+s).disabled=true; }
+function unlockPub(s){ document.getElementById('pubBtn-'+s).disabled=false; }
+function resetEditor(s){
+  document.getElementById('et-'+s).value=localStorage.getItem('title-'+s)||SERVICE_META[s].name;
+  document.getElementById('ec-'+s).innerHTML=localStorage.getItem('desc-'+s)||getDefaultContent(s);
+  document.getElementById('ob-'+s).style.display='none';
+  document.getElementById('sf-'+s).classList.remove('show');
+  lockPub(s);
+}
+function publishService(s,silent){
+  const title=document.getElementById('et-'+s).value.trim();
+  const desc=document.getElementById('ec-'+s).innerHTML;
+  if(!title){if(!silent)alert('Title empty.');return false;}
+  localStorage.setItem('title-'+s,title);
+  localStorage.setItem('desc-'+s,desc);
+  const ts=new Date().toLocaleString('en-PK',{dateStyle:'medium',timeStyle:'short'});
+  localStorage.setItem('updated-'+s,ts);
+  localStorage.setItem('last_publish',ts);
+  if(!silent){const f=document.getElementById('sf-'+s);f.classList.add('show');setTimeout(()=>f.classList.remove('show'),3000);}
+  lockPub(s);
+  updateDash();
+  return true;
+}
+
+/* ══════════ MANUAL OPTIMIZER ══════════ */
+async function manualOptimize(s){
+  const key=getKey();
+  if(!key){alert('Save your Gemini API key in the sidebar first.');return;}
+  const btn=document.getElementById('optBtn-'+s);
+  btn.disabled=true;
+  document.getElementById('obi-'+s).outerHTML='<span id="obi-'+s+'" class="spin">↻</span>';
+  const box=document.getElementById('ob-'+s); box.style.display='block';
+  const stepEl=document.getElementById('os-'+s); const kwEl=document.getElementById('kf-'+s);
+  kwEl.style.display='none'; stepEl.innerHTML='';
+  lockPub(s);
+  addLog('run',SERVICE_META[s].name+' — manual optimize started');
+  try{
+    renderEdSteps(stepEl,0,0);
+    await delay(400); renderEdSteps(stepEl,1,1);
+    const {kws,qs}=await fetchKwData(key,s);
+    renderEdSteps(stepEl,2,2);
+    kwEl.style.display='block';
+    kwEl.innerHTML='<div class="kw-cloud">'+[...kws,...qs].map(k=>`<span class="kw-pill">${k}</span>`).join('')+'</div>';
+    await delay(300); renderEdSteps(stepEl,3,3);
+    const currentText=document.getElementById('ec-'+s).innerText.trim();
+    const newHtml=await rewriteForSEO(key,s,kws,qs,currentText);
+    renderEdSteps(stepEl,-1,5);
+    document.getElementById('ec-'+s).innerHTML=newHtml;
+    unlockPub(s);
+    saveKwToMemory(s,kws,qs);
+    addLog('ok',SERVICE_META[s].name+' — optimized. Press Publish.');
+    renderKwCloud();
+  } catch(e){
+    addLog('err',SERVICE_META[s].name+' — '+e.message);
+    renderEdSteps(stepEl,-1,0,3);
+  }
+  btn.disabled=false;
+  document.getElementById('obi-'+s).outerHTML='<span id="obi-'+s+'">✦</span>';
+}
+function renderEdSteps(el,active,done,err=-1){
+  const stps=['Analysing niche...','Researching keywords...','Finding AEO questions...','Rewriting content...','Done'];
+  el.innerHTML=stps.map((t,i)=>{
+    let ic='pending',icon='○',tc='';
+    if(err===i){ic='error';icon='✕';}
+    else if(i<done){ic='done';icon='✓';tc='done-text';}
+    else if(i===active){ic='active';icon='●';tc='active-text';}
+    return `<li style="display:flex;gap:.6rem;align-items:flex-start;padding:.3rem 0;font-size:.72rem"><div class="step-icon ${ic}" style="width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;background:${ic==='done'?'rgba(110,201,143,.15)':ic==='active'?'rgba(76,168,168,.2)':ic==='error'?'rgba(217,96,96,.15)':'var(--mid)'};color:${ic==='done'?'var(--green)':ic==='active'?'var(--teal)':ic==='error'?'var(--red)':'var(--muted)'};${ic==='active'?'animation:bp .8s ease-in-out infinite':''}">${icon}</div><span style="color:${tc==='active-text'?'var(--teal)':tc==='done-text'?'var(--text)':'var(--muted)'}">${t}</span></li>`;
+  }).join('');
+}
+
+/* ══════════ SCHEDULER ══════════ */
+function restoreSched(){
+  const on=localStorage.getItem('seos_on')==='true';
+  const iv=parseInt(localStorage.getItem('seos_interval')||'3600000');
+  document.getElementById('schedToggle').checked=on;
+  document.getElementById('schedInterval').value=iv;
+  if(on) startSched(iv,true);
+  else updateSchedUI(false);
+}
+function toggleSched(){
+  const on=document.getElementById('schedToggle').checked;
+  localStorage.setItem('seos_on',on);
+  if(on){ const iv=parseInt(document.getElementById('schedInterval').value); startSched(iv,false); addLog('run','Auto-scheduler ENABLED — interval: '+document.getElementById('schedInterval').options[document.getElementById('schedInterval').selectedIndex].text); }
+  else { stopSched(); addLog('info','Auto-scheduler DISABLED.'); }
+}
+function saveInterval(){
+  const iv=parseInt(document.getElementById('schedInterval').value);
+  localStorage.setItem('seos_interval',iv);
+  if(document.getElementById('schedToggle').checked){ stopSched(); startSched(iv,false); addLog('info','Interval updated.'); }
+}
+function startSched(iv,restored){
+  stopSched();
+  updateSchedUI(true);
+  if(!restored){ runFullAuto(); nextRun=Date.now()+iv; }
+  else { const last=parseInt(localStorage.getItem('seos_last_run')||'0'); const elapsed=Date.now()-last; const wait=elapsed<iv?iv-elapsed:0; nextRun=Date.now()+wait; if(wait===0) runFullAuto(); }
+  schedTimer=setInterval(()=>{ runFullAuto(); nextRun=Date.now()+iv; }, iv);
+  startCountdown();
+}
+function stopSched(){
+  clearInterval(schedTimer); schedTimer=null;
+  clearInterval(countTimer); countTimer=null;
+  nextRun=null; localStorage.setItem('seos_next_run','');
+  updateSchedUI(false);
+}
+function startCountdown(){
+  clearInterval(countTimer);
+  countTimer=setInterval(()=>{
+    if(!nextRun) return;
+    const diff=Math.max(0,nextRun-Date.now());
+    const m=String(Math.floor(diff/60000)).padStart(2,'0');
+    const s=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    const info=`Next run in: <span>${m}:${s}</span>`;
+    const ni=document.getElementById('nextRunInfo'); if(ni) ni.innerHTML=info;
+    localStorage.setItem('seos_next_run',nextRun);
+  },1000);
+}
+function updateSchedUI(on){
+  const lbl=document.getElementById('schedTglLabel'); if(lbl) lbl.textContent=on?'ON':'OFF';
+  if(!on){ const ni=document.getElementById('nextRunInfo'); if(ni) ni.textContent='Scheduler is off.'; }
+}
+function syncTopBar(){
+  const on=localStorage.getItem('seos_on')==='true';
+  const run=localStorage.getItem('seos_running')==='true';
+  const dot=document.getElementById('topDot');
+  const st=document.getElementById('topStatus');
+  if(dot){ dot.className='status-dot'+(run?' run':on?' on':''); }
+  if(st){ st.textContent=run?'Running':on?'Auto':'Idle'; }
+}
+function runNow(){ addLog('run','Manual run triggered.'); runFullAuto(); if(schedTimer) nextRun=Date.now()+parseInt(document.getElementById('schedInterval').value); }
+
+/* ══════════ FULL AUTO RUN ══════════ */
+async function runFullAuto(){
+  if(isRunning){ addLog('info','Skipped — already running.'); return; }
+  const key=getKey();
+  if(!key){ addLog('err','No API key. Auto-run skipped.'); return; }
+  isRunning=true; localStorage.setItem('seos_running','true');
+  localStorage.setItem('seos_last_run',Date.now());
+  addLog('run','══ Auto SEO cycle started ══');
+  setPipelineState('active',0);
+
+  // 1. KEYWORD RESEARCH + CONTENT REWRITE for each service
+  for(const s of ['law','study','hr']){
+    try{
+      addLog('run',`Optimizing: ${SERVICE_META[s].name}`);
+      const currentText=localStorage.getItem('desc-'+s)||getDefaultContent(s);
+      const currentTextClean=currentText.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+      const {kws,qs}=await fetchKwData(key,s);
+      saveKwToMemory(s,kws,qs);
+      addLog('kw',`Keywords: ${kws.slice(0,3).join(', ')}...`);
+      const newHtml=await rewriteForSEO(key,s,kws,qs,currentTextClean);
+      // Quality confidence check
+      const conf=scoreConfidence(newHtml,s);
+      if(conf==='high'){
+        document.getElementById('ec-'+s).innerHTML=newHtml;
+        publishService(s,true);
+        addLog('pub',`${SERVICE_META[s].name} — published (confidence: HIGH)`);
+      } else {
+        addToReviewQueue({service:s,title:'Content update: '+SERVICE_META[s].name,html:newHtml,conf,date:new Date().toLocaleString('en-PK')});
+        addLog('run',`${SERVICE_META[s].name} — queued for review (confidence: ${conf.toUpperCase()})`);
+      }
+    }catch(e){ addLog('err',`${SERVICE_META[s].name} — ${e.message}`); }
+    await delay(1500);
+  }
+
+  setPipelineState('active',1); await delay(400); setPipelineState('done',1);
+
+  // 2. BLOG ARTICLE (auto pick topic from clusters)
+  setPipelineState('active',2);
+  try{
+    const topic=getNextBlogTopic();
+    const blogHtml=await generateBlogAI(key,topic.title,topic.cat,'micro');
+    if(blogHtml){ saveBlogPost({title:topic.title,category:topic.cat,content:blogHtml,excerpt:blogHtml.replace(/<[^>]+>/g,' ').substring(0,150)+'...',date:new Date().toLocaleDateString('en-PK'),readTime:'3 min'}); addLog('pub',`Blog: "${topic.title}" published`); renderBlogList(); updateBadges(); }
+  }catch(e){ addLog('err','Blog gen: '+e.message); }
+  setPipelineState('done',2); await delay(600);
+
+  // 3. FAQ UPDATE
+  setPipelineState('active',3);
+  try{
+    const newFaqs=await generateFAQsAI(key);
+    if(newFaqs&&newFaqs.length){ newFaqs.forEach(f=>saveFAQ(f)); addLog('pub',`${newFaqs.length} new FAQs added`); renderFAQList(); updateBadges(); }
+  }catch(e){ addLog('err','FAQ gen: '+e.message); }
+  setPipelineState('done',3); await delay(400);
+
+  // 4. DONE
+  setPipelineState('done',4);
+  addLog('ok','══ Auto SEO cycle complete ══');
+  isRunning=false; localStorage.setItem('seos_running','false');
+  updateDash(); renderMemory(); renderKwCloud();
+  incrementRunCount();
+}
+
+function setPipelineState(state,idx){
+  ['sps','ps'].forEach(prefix=>{
+    const el=document.getElementById(prefix+idx);
+    if(el){ el.className='pipe-step'; if(state==='active') el.classList.add('ps-active'); else if(state==='done') el.classList.add('ps-done'); }
+  });
+}
+
+/* ══════════ GEMINI HELPERS ══════════ */
+async function fetchKwData(key,s){
+  const meta=SERVICE_META[s];
+  const raw=await callGemini(`You are an SEO expert for Pakistan-based consultancies.
+Service: "${meta.name}" | Niche: ${meta.niche} | Audience: ${meta.audience}
+Return ONLY valid JSON (no markdown, no backticks):
+{"seo_keywords":["kw1","kw2","kw3","kw4","kw5","kw6"],"aeo_questions":["q1","q2","q3"]}
+Rules: seo_keywords = 6 long-tail Pakistan-relevant terms. aeo_questions = 3 real user questions.`,512);
+  try{ const p=JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim()); return {kws:p.seo_keywords||[],qs:p.aeo_questions||[]}; }
+  catch(e){ return {kws:[meta.niche.split(',')[0]],qs:['What does '+meta.name+' offer?']}; }
+}
+
+async function rewriteForSEO(key,s,kws,qs,currentText){
+  const meta=SERVICE_META[s];
+  const raw=await callGemini(`You are an SEO content writer for a professional Pakistani consultancy.
+Service: "${meta.name}"
+SEO Keywords: ${kws.join(', ')}
+AEO Questions to answer: ${qs.join(' | ')}
+Current content: """${currentText.substring(0,600)}"""
+Rules: 1) Same professional tone 2) 2 paragraphs only 3) Naturally use 4+ keywords 4) Answer AEO questions subtly 5) Pakistan-relevant 6) Return ONLY 2 <p> tags — no extra text`,768);
+  let html=raw.replace(/\`\`\`html|\`\`\`/g,'').replace(/^Here.*?:\s*/i,'').trim();
+  if(!html.includes('<p>')) html=html.split('\n\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
+  return html;
+}
+
+async function generateBlogAI(key,title,cat,type){
+  const len=type==='micro'?'200-350 words':type==='article'?'600-800 words':'1000-1200 words';
+  const raw=await callGemini(`Write a ${len} SEO-optimised blog post for Trio Nexus (Pakistan consultancy).
+Title: "${title}" | Category: ${cat}
+Requirements: Professional tone, Pakistan context, include 2-3 relevant questions as H3 subheadings, end with a CTA.
+Return ONLY the HTML body content using <p>, <h3>, <ul>, <li> tags. No <html> or <head> tags.`,1024);
+  return raw.replace(/\`\`\`html|\`\`\`/g,'').trim();
+}
+
+async function generateFAQsAI(key){
+  const raw=await callGemini(`Generate 2 new unique FAQ pairs for Trio Nexus Pakistan consultancy (law, study abroad, or HR).
+These must NOT duplicate common questions. Focus on specific Pakistan-context scenarios.
+Return ONLY JSON array: [{"q":"question","a":"answer"},{"q":"question","a":"answer"}]
+No markdown, no backticks.`,400);
+  try{ return JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim()); }
+  catch(e){ return []; }
+}
+
+/* ══════════ CONFIDENCE SCORING ══════════ */
+function scoreConfidence(html,s){
+  const text=html.replace(/<[^>]+>/g,' ');
+  const len=text.trim().length;
+  const hasLegal=s==='law';
+  if(len<80) return 'low';
+  if(hasLegal&&len<200) return 'medium';
+  if(len>100&&!text.includes('ERROR')) return 'high';
+  return 'medium';
+}
+
+/* ══════════ REVIEW QUEUE ══════════ */
+function addToReviewQueue(item){
+  const q=JSON.parse(localStorage.getItem('review_queue')||'[]');
+  q.push(item); localStorage.setItem('review_queue',JSON.stringify(q));
+  updateBadges();
+}
+function renderReviewQueue(){
+  const q=JSON.parse(localStorage.getItem('review_queue')||'[]');
+  const el=document.getElementById('reviewList');
+  document.getElementById('reviewBadge').textContent=q.length;
+  if(!q.length){el.innerHTML='<div style="font-size:.72rem;color:var(--muted-2);padding:.5rem">No items. High-confidence content auto-publishes.</div>';return;}
+  el.innerHTML=q.map((item,i)=>`
+    <div class="review-item ${item.conf}">
+      <div class="review-title">${item.title}</div>
+      <div class="review-meta">${item.date} · Confidence: <span class="conf-badge conf-${item.conf}">${item.conf}</span></div>
+      <div class="review-btns">
+        <button class="rv-approve" onclick="approveReview(${i})">✓ Approve & Publish</button>
+        <button class="rv-reject" onclick="rejectReview(${i})">✕ Discard</button>
+      </div>
+    </div>`).join('');
+}
+function approveReview(i){
+  const q=JSON.parse(localStorage.getItem('review_queue')||'[]');
+  const item=q[i];
+  if(item.service){ document.getElementById('ec-'+item.service).innerHTML=item.html; publishService(item.service,true); addLog('pub','Approved: '+item.title); }
+  q.splice(i,1); localStorage.setItem('review_queue',JSON.stringify(q));
+  renderReviewQueue();
+}
+function rejectReview(i){
+  const q=JSON.parse(localStorage.getItem('review_queue')||'[]');
+  addLog('info','Discarded: '+q[i].title);
+  q.splice(i,1); localStorage.setItem('review_queue',JSON.stringify(q));
+  renderReviewQueue();
+}
+
+/* ══════════ BLOG ══════════ */
+function getNextBlogTopic(){
+  const topics=[
+    {title:'Corporate Law Services in Lahore: What Businesses Need to Know',cat:'Legal'},
+    {title:'Poland Student Visa Guide for Pakistani Students 2025',cat:'Study Abroad'},
+    {title:'Talent Acquisition Strategies for Pakistani SMEs',cat:'HR'},
+    {title:'How to Write a Winning SOP for European Universities',cat:'Study Abroad'},
+    {title:'Dispute Resolution Options in Pakistan: A Business Guide',cat:'Legal'},
+    {title:'HR Payroll Management Best Practices in Pakistan',cat:'HR'},
+    {title:'Germany Scholarship Opportunities for Pakistani Students',cat:'Study Abroad'},
+    {title:'Contract Drafting Essentials for Pakistan Businesses',cat:'Legal'},
+    {title:'Building a Talent Pipeline: Executive Search in Pakistan',cat:'HR'}
+  ];
+  const used=JSON.parse(localStorage.getItem('used_blog_topics')||'[]');
+  const remaining=topics.filter(t=>!used.includes(t.title));
+  const pick=remaining.length?remaining[0]:topics[Math.floor(Math.random()*topics.length)];
+  used.push(pick.title); if(used.length>30) used.shift();
+  localStorage.setItem('used_blog_topics',JSON.stringify(used));
+  return pick;
+}
+async function generateBlogPost(){
+  const key=getKey(); if(!key){alert('Save Gemini API key first.');return;}
+  const topic=document.getElementById('blogTopicInput').value.trim();
+  if(!topic){alert('Enter a topic.');return;}
+  const cat=document.getElementById('blogCat').value;
+  const type=document.getElementById('blogType').value;
+  const btn=document.getElementById('genBlogBtn'); btn.disabled=true;
+  document.getElementById('genBlogIcon').outerHTML='<span id="genBlogIcon" class="spin">↻</span>';
+  document.getElementById('blogGenProgress').style.display='block';
+  const stepEl=document.getElementById('blogGenSteps');
+  const stepDefs=['Researching topic...','Writing content...','Optimizing for SEO...','Finalizing...'];
+  renderSimpleSteps(stepEl,0,0);
+  addLog('run','Blog generation: '+topic);
+  try{
+    await delay(300); renderSimpleSteps(stepEl,1,1);
+    await delay(200); renderSimpleSteps(stepEl,2,2);
+    const html=await generateBlogAI(key,topic,cat,type);
+    renderSimpleSteps(stepEl,-1,4);
+    const excerpt=html.replace(/<[^>]+>/g,' ').substring(0,150)+'...';
+    document.getElementById('blogPreviewCard').style.display='block';
+    document.getElementById('blogPreviewEmpty').style.display='none';
+    document.getElementById('blogPreviewCard').innerHTML=`<div class="blog-preview-tag">${cat}</div><div class="blog-preview-title">${topic}</div><div class="blog-preview-excerpt">${excerpt}</div>`;
+    const post={title:topic,category:cat,content:html,excerpt,date:new Date().toLocaleDateString('en-PK'),readTime:Math.ceil(html.replace(/<[^>]+>/g,'').split(' ').length/200)+' min'};
+    saveBlogPost(post); renderBlogList(); updateBadges();
+    addLog('pub','Blog published: '+topic);
+    const f=document.getElementById('blogFlash'); f.classList.add('show'); setTimeout(()=>f.classList.remove('show'),3000);
+  }catch(e){ addLog('err','Blog: '+e.message); }
+  btn.disabled=false; document.getElementById('genBlogIcon').outerHTML='<span id="genBlogIcon">✦</span>';
+  document.getElementById('blogGenProgress').style.display='none';
+}
+function renderSimpleSteps(el,active,done){
+  const stps=['Researching topic...','Writing content...','Optimizing for SEO...','Finalizing...'];
+  el.innerHTML=stps.map((t,i)=>{
+    const ic=i<done?'done':i===active?'active':'pending';
+    const icon=i<done?'✓':i===active?'●':'○';
+    return `<li style="display:flex;gap:.5rem;font-size:.7rem;padding:.25rem 0;color:${i===active?'var(--teal)':i<done?'var(--text)':'var(--muted)'}">${icon} ${t}</li>`;
+  }).join('');
+}
+function saveBlogPost(post){
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  posts.unshift(post); if(posts.length>50) posts.length=50;
+  localStorage.setItem('blog_posts',JSON.stringify(posts));
+}
+function renderBlogList(){
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  const el=document.getElementById('blogListEl');
+  const cnt=document.getElementById('blogCount');
+  if(cnt) cnt.textContent=posts.length;
+  document.getElementById('blogBadge').textContent=posts.length;
+  if(!posts.length){el.innerHTML='<div style="font-size:.7rem;color:var(--muted-2);padding:.5rem">No articles yet.</div>';return;}
+  el.innerHTML=posts.map((p,i)=>`<div class="blog-row"><div class="blog-row-title">${p.title}</div><div class="blog-row-tag">${p.category}</div><div class="blog-row-date">${p.date}</div><button class="blog-row-del" onclick="deleteBlog(${i})" title="Delete">✕</button></div>`).join('');
+}
+function deleteBlog(i){
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  posts.splice(i,1); localStorage.setItem('blog_posts',JSON.stringify(posts));
+  renderBlogList(); updateBadges();
+}
+
+/* ══════════ FAQ ══════════ */
+async function aiFAQ(){
+  const key=getKey(); if(!key){alert('Save Gemini key first.');return;}
+  const q=document.getElementById('faqQ').value.trim(); if(!q){alert('Enter a question.');return;}
+  try{
+    const raw=await callGemini(`Write a helpful, professional answer (2-3 sentences) for this FAQ about Trio Nexus Pakistan consultancy.
+Question: "${q}"
+Return ONLY the answer text — no quotes, no labels.`,256);
+    document.getElementById('faqA').value=raw.trim();
+  }catch(e){ alert('AI error: '+e.message); }
+}
+function addFAQ(){
+  const q=document.getElementById('faqQ').value.trim(); const a=document.getElementById('faqA').value.trim();
+  if(!q||!a){alert('Fill question and answer.');return;}
+  saveFAQ({q,a}); renderFAQList(); updateBadges();
+  document.getElementById('faqQ').value=''; document.getElementById('faqA').value='';
+  addLog('pub','FAQ added: '+q.substring(0,50)+'...');
+}
+function saveFAQ(faq){
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  if(faqs.find(f=>f.q===faq.q)) return;
+  faqs.push(faq); if(faqs.length>20) faqs.shift();
+  localStorage.setItem('faqs',JSON.stringify(faqs));
+}
+function renderFAQList(){
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  const el=document.getElementById('faqListEl');
+  const tot=document.getElementById('faqTotal'); if(tot) tot.textContent=faqs.length;
+  if(!faqs.length){el.innerHTML='<div style="font-size:.7rem;color:var(--muted-2)">No FAQs yet.</div>';return;}
+  el.innerHTML=faqs.map((f,i)=>`<div style="padding:.55rem .6rem;border-bottom:1px solid var(--border-2);font-size:.7rem"><div style="color:var(--text);margin-bottom:.2rem">${f.q}</div><div style="color:var(--muted)">${f.a.substring(0,80)}...</div><button style="background:none;border:none;color:var(--muted-2);cursor:pointer;font-size:.7rem;margin-top:.3rem" onclick="delFAQ(${i})">✕ Remove</button></div>`).join('');
+}
+function delFAQ(i){ const f=JSON.parse(localStorage.getItem('faqs')||'[]'); f.splice(i,1); localStorage.setItem('faqs',JSON.stringify(f)); renderFAQList(); }
+
+/* ══════════ KEYWORD MEMORY ══════════ */
+function saveKwToMemory(s,kws,qs){
+  const mem=JSON.parse(localStorage.getItem('seo_memory')||'{}');
+  if(!mem.keywords) mem.keywords={};
+  if(!mem.keywords[s]) mem.keywords[s]=[];
+  const all=[...kws,...qs];
+  all.forEach(k=>{ if(!mem.keywords[s].includes(k)) mem.keywords[s].push(k); });
+  if(!mem.runs) mem.runs=0; mem.runs++;
+  mem.lastRun=new Date().toLocaleString('en-PK');
+  localStorage.setItem('seo_memory',JSON.stringify(mem));
+  // also save flat list for easy access
+  const flat=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+  all.forEach(k=>{ if(!flat.includes(k)) flat.push(k); });
+  if(flat.length>200) flat.length=200;
+  localStorage.setItem('all_keywords',JSON.stringify(flat));
+}
+function renderKwCloud(){
+  const kws=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+  const el=document.getElementById('kwAllCloud'); if(!el) return;
+  const total=document.getElementById('kwTotal'); if(total) total.textContent=kws.length;
+  document.getElementById('dashKwCloud').innerHTML=kws.slice(0,15).map(k=>`<span class="kw-pill">${k}</span>`).join('')||'<span style="font-size:.68rem;color:var(--muted-2)">No keywords yet.</span>';
+  el.innerHTML=kws.map(k=>`<span class="kw-pill">${k}</span>`).join('')||'<span style="font-size:.68rem;color:var(--muted-2)">No keywords yet.</span>';
+}
+async function runKwResearch(){
+  const key=getKey(); if(!key){alert('Save Gemini key first.');return;}
+  const seed=document.getElementById('kwSeed').value.trim(); if(!seed){alert('Enter a seed keyword.');return;}
+  const btn=document.getElementById('kwResBtn'); btn.disabled=true;
+  document.getElementById('kwResIcon').outerHTML='<span id="kwResIcon" class="spin">↻</span>';
+  try{
+    const raw=await callGemini(`You are an SEO keyword researcher.
+Seed keyword: "${seed}" (Pakistan context)
+Generate a comprehensive keyword cluster. Return ONLY JSON:
+{"primary":["kw1","kw2","kw3"],"longtail":["lk1","lk2","lk3","lk4","lk5"],"questions":["q1","q2","q3"],"related":["r1","r2","r3"]}
+No markdown, no backticks. All keywords must be relevant to Pakistan market.`,512);
+    const p=JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    const all=[...(p.primary||[]),...(p.longtail||[]),...(p.questions||[]),...(p.related||[])];
+    const el=document.getElementById('kwResults');
+    el.innerHTML=`<div class="kw-cloud">${all.map((k,i)=>`<span class="kw-pill${i<3?' ':i<8?' teal':' purple'}">${k}</span>`).join('')}</div>`;
+    // save all to memory
+    const flat=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+    all.forEach(k=>{ if(!flat.includes(k)) flat.push(k); });
+    if(flat.length>200) flat.length=200;
+    localStorage.setItem('all_keywords',JSON.stringify(flat));
+    addLog('kw','Keyword research complete: '+all.length+' keywords for "'+seed+'"');
+    renderKwCloud();
+  }catch(e){ addLog('err','KW research: '+e.message); }
+  btn.disabled=false; document.getElementById('kwResIcon').outerHTML='<span id="kwResIcon">✦</span>';
+}
+function quickResearch(seed){ document.getElementById('kwSeed').value=seed; runKwResearch(); showPanel('keywords',null); }
+
+/* ══════════ TOPIC CLUSTERS ══════════ */
+async function generateClusters(){
+  const key=getKey(); if(!key){alert('Save Gemini key first.');return;}
+  const icon=document.getElementById('clusterIcon');
+  icon.outerHTML='<span id="clusterIcon" class="spin">↻</span>';
+  try{
+    const raw=await callGemini(`Build a topical authority cluster map for Trio Nexus Pakistan consultancy.
+For each of 3 services, generate 5 specific child topics for Pakistan market.
+Return ONLY JSON:
+{
+  "law":{"parent":"Legal Consultancy Pakistan","children":["topic1","topic2","topic3","topic4","topic5"]},
+  "study":{"parent":"Study Abroad Pakistan","children":["topic1","topic2","topic3","topic4","topic5"]},
+  "hr":{"parent":"HR Services Pakistan","children":["topic1","topic2","topic3","topic4","topic5"]}
+}`,600);
+    const data=JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    localStorage.setItem('topic_clusters',JSON.stringify(data));
+    renderClusters();
+    addLog('ok','Topic clusters generated for all 3 services.');
+  }catch(e){ addLog('err','Clusters: '+e.message); }
+  document.getElementById('clusterIcon').outerHTML='<span id="clusterIcon">✦</span>';
+}
+function renderClusters(){
+  const data=JSON.parse(localStorage.getItem('topic_clusters')||'null');
+  const el=document.getElementById('clusterGrid');
+  if(!data){el.innerHTML='<div class="os-card" style="grid-column:1/-1;text-align:center;color:var(--muted-2);font-size:.72rem">Click "AI Generate Clusters".</div>';return;}
+  el.innerHTML=Object.entries(data).map(([k,v])=>`
+    <div class="cluster-card">
+      <div class="cluster-parent">${v.parent}</div>
+      <ul class="cluster-children">${(v.children||[]).map((c,i)=>`<li class="${i<2?'done':''}">${c}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+/* ══════════ SCHEMA ══════════ */
+function renderSchemas(){
+  const out=document.getElementById('schemaOutput'); if(!out) return;
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  const schemas=[
+    {label:'Organization Schema',json:{
+      '@context':'https://schema.org','@type':'Organization','name':'Trio Nexus',
+      'url':'https://www.trionexus.org','address':{'@type':'PostalAddress','addressLocality':'Lahore','addressCountry':'PK'},
+      'foundingDate':'2024','description':'Pakistan-based consultancy: legal, study abroad, HR services'
+    }},
+    {label:'FAQ Schema',json:{
+      '@context':'https://schema.org','@type':'FAQPage',
+      'mainEntity':faqs.slice(0,5).map(f=>({'@type':'Question','name':f.q,'acceptedAnswer':{'@type':'Answer','text':f.a}}))
+    }}
+  ];
+  out.innerHTML=schemas.map(s=>`<div class="schema-label">${s.label}</div><pre class="schema-block">${JSON.stringify(s.json,null,2)}</pre>`).join('');
+}
+async function genSchema(type){
+  const key=getKey(); if(!key){alert('Save Gemini key first.');return;}
+  try{
+    const raw=await callGemini(`Generate a ${type} JSON-LD schema for Trio Nexus Pakistan consultancy (trionexus.org, Lahore).
+Return ONLY valid JSON-LD. No markdown. No explanation.`,400);
+    const el=document.getElementById('schemaOutput');
+    el.innerHTML=`<div class="schema-label">${type} Schema (AI Generated)</div><pre class="schema-block">${raw.replace(/\`\`\`json|\`\`\`/g,'').trim()}</pre>`+(el.innerHTML||'');
+    addLog('ok','Schema generated: '+type);
+  }catch(e){ addLog('err','Schema: '+e.message); }
+}
+function copySchema(){ const el=document.getElementById('schemaOutput'); if(el){ navigator.clipboard.writeText(el.innerText); addLog('info','Schema copied to clipboard.'); } }
+function generateSitemap(){
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  const now=new Date().toISOString().split('T')[0];
+  const urls=['/','/blog.html','/#services','/#faq',...posts.map((_,i)=>`/blog/post-${i+1}.html`)];
+  const xml=`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(u=>`  <url>\n    <loc>https://www.trionexus.org${u}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${u==='/'?'1.0':'0.8'}</priority>\n  </url>`).join('\n')}
+</urlset>`;
+  const blob=new Blob([xml],{type:'text/xml'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sitemap.xml'; a.click();
+  addLog('ok','sitemap.xml downloaded ('+urls.length+' URLs)');
+}
+function generateRobots(){
+  const txt=`User-agent: *\nAllow: /\nDisallow: /seo-os.html\nDisallow: /admin/\n\nSitemap: https://www.trionexus.org/sitemap.xml\n\n# Optimised for Googlebot, Bingbot, AI crawlers\nUser-agent: GPTBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: PerplexityBot\nAllow: /`;
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='robots.txt'; a.click();
+  addLog('ok','robots.txt downloaded');
+}
+
+/* ══════════ MEMORY ══════════ */
+function renderMemory(){
+  const mem=JSON.parse(localStorage.getItem('seo_memory')||'{}');
+  const flat=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  const el=document.getElementById('memoryTable');
+  const v=(x)=>x||'—';
+  const rows=[
+    ['Total keywords tracked',flat.length,''],
+    ['FAQs in database',faqs.length,''],
+    ['Total AI runs',v(mem.runs),''],
+    ['Last AI run',v(mem.lastRun),''],
+    ['Law keywords',v(mem.keywords?.law?.length),''],
+    ['Study keywords',v(mem.keywords?.study?.length),''],
+    ['HR keywords',v(mem.keywords?.hr?.length),''],
+    ['Blog posts',JSON.parse(localStorage.getItem('blog_posts')||'[]').length,''],
+    ['Scheduler',localStorage.getItem('seos_on')==='true'?'Active':'Inactive',''],
+  ];
+  document.getElementById('mem-kw').textContent=flat.length;
+  document.getElementById('mem-faq').textContent=faqs.length;
+  document.getElementById('mem-runs').textContent=v(mem.runs);
+  el.innerHTML=rows.map(r=>`<div class="kg-row"><div class="kg-key">${r[0]}</div><div class="kg-val">${r[1]}</div></div>`).join('');
+}
+function clearMemory(){
+  if(!confirm('Reset all SEO memory? This cannot be undone.')) return;
+  ['seo_memory','all_keywords','faqs','blog_posts','activity_log','topic_clusters','review_queue'].forEach(k=>localStorage.removeItem(k));
+  renderMemory(); renderFAQList(); renderBlogList(); renderKwCloud(); clearLog();
+  addLog('info','SEO memory reset.');
+}
+
+/* ══════════ TECHNICAL SEO ══════════ */
+function loadTechMeta(){
+  document.getElementById('metaTitle').value=localStorage.getItem('meta_title')||'Trio Nexus | Law, Study Abroad & HR Consultants Pakistan';
+  document.getElementById('metaDesc').value=localStorage.getItem('meta_desc')||'Trio Nexus offers expert legal consultancy, study abroad guidance, and HR services in Pakistan.';
+  document.getElementById('metaFocus').value=localStorage.getItem('meta_focus')||'';
+  updateMetaPreview();
+  renderTechChecklist();
+}
+function saveMeta(){
+  const t=document.getElementById('metaTitle').value.trim();
+  const d=document.getElementById('metaDesc').value.trim();
+  const f=document.getElementById('metaFocus').value.trim();
+  localStorage.setItem('meta_title',t); localStorage.setItem('meta_desc',d); localStorage.setItem('meta_focus',f);
+  updateMetaPreview(); renderTechChecklist();
+  addLog('ok','Meta tags saved: '+t.substring(0,40)+'...');
+}
+function updateMetaPreview(){
+  const t=localStorage.getItem('meta_title')||'—'; const d=localStorage.getItem('meta_desc')||'—';
+  document.getElementById('previewTitle').textContent=t; document.getElementById('previewDesc').textContent=d;
+}
+function renderTechChecklist(){
+  const t=localStorage.getItem('meta_title')||'';
+  const d=localStorage.getItem('meta_desc')||'';
+  const kws=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  const checks=[
+    {label:'Meta title length (30-60 chars)',pass:t.length>=30&&t.length<=60,val:t.length+' chars'},
+    {label:'Meta description (120-160 chars)',pass:d.length>=120&&d.length<=160,val:d.length+' chars'},
+    {label:'Keywords tracked',pass:kws.length>0,val:kws.length},
+    {label:'FAQs published',pass:faqs.length>=5,val:faqs.length},
+    {label:'Scheduler active',pass:localStorage.getItem('seos_on')==='true',val:''},
+    {label:'API key configured',pass:!!getKey(),val:''},
+  ];
+  document.getElementById('techChecklist').innerHTML=checks.map(c=>`<div style="color:${c.pass?'var(--green)':'var(--red)'}">
+    ${c.pass?'✓':'✕'} ${c.label} ${c.val?`<span style="color:var(--muted)">(${c.val})</span>`:''}
+  </div>`).join('');
+}
+
+/* ══════════ SECURITY ══════════ */
+function changePwd(){
+  const cur=document.getElementById('secCurrent').value;
+  const nw=document.getElementById('secNew').value;
+  const cf=document.getElementById('secConfirm').value;
+  const msg=document.getElementById('secMsg');
+  if(cur!==ADMIN_PWD){msg.style.color='var(--red)';msg.textContent='Current password incorrect.';msg.style.display='block';return;}
+  if(nw.length<8){msg.style.color='var(--red)';msg.textContent='New password must be at least 8 characters.';msg.style.display='block';return;}
+  if(nw!==cf){msg.style.color='var(--red)';msg.textContent='Passwords do not match.';msg.style.display='block';return;}
+  ADMIN_PWD=nw; localStorage.setItem('admin_pwd',nw);
+  msg.style.color='var(--green)'; msg.textContent='Password updated successfully.'; msg.style.display='block';
+  document.getElementById('secCurrent').value=''; document.getElementById('secNew').value=''; document.getElementById('secConfirm').value='';
+  addLog('ok','Admin password updated.');
+  setTimeout(()=>msg.style.display='none',3000);
+}
+
+/* ══════════ DASHBOARD ══════════ */
+function updateDash(){
+  const kws=JSON.parse(localStorage.getItem('all_keywords')||'[]');
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  const faqs=JSON.parse(localStorage.getItem('faqs')||'[]');
+  const mem=JSON.parse(localStorage.getItem('seo_memory')||'{}');
+  document.getElementById('dash-kw').textContent=kws.length;
+  document.getElementById('dash-blog').textContent=posts.length;
+  document.getElementById('dash-faq').textContent=faqs.length;
+  document.getElementById('dash-runs').textContent=mem.runs||0;
+  const on=localStorage.getItem('seos_on')==='true';
+  document.getElementById('dashSchedStatus').innerHTML=on?`Auto-optimizer is <strong style="color:var(--green)">ACTIVE</strong><br>Services: Law, Study Abroad, HR — updated each cycle`:`Auto-optimizer is <strong style="color:var(--muted)">inactive</strong>. Enable in Auto Scheduler tab.`;
+  updateBadges();
+}
+function updateBadges(){
+  const posts=JSON.parse(localStorage.getItem('blog_posts')||'[]');
+  const q=JSON.parse(localStorage.getItem('review_queue')||'[]');
+  document.getElementById('blogBadge').textContent=posts.length;
+  document.getElementById('reviewBadge').textContent=q.length;
+}
+function incrementRunCount(){ const m=JSON.parse(localStorage.getItem('seo_memory')||'{}'); m.runs=(m.runs||0)+1; localStorage.setItem('seo_memory',JSON.stringify(m)); }
+
+/* ══════════ HELPERS ══════════ */
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* ══════════ MOBILE NAV ══════════ */
+function mobNav(id, el){
+  showPanel(id, null);
+  document.querySelectorAll('.mob-nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  // scroll panel to top
+  document.querySelector('.main').scrollTo(0, 0);
+}
+
+function saveMobKey(){
+  const k = document.getElementById('mobKeyInput').value.trim();
+  if(!k || !k.startsWith('AIza')){ alert('Please enter a valid Gemini key starting with AIza...'); return; }
+  localStorage.setItem('gemini_api_key', k);
+  document.getElementById('mobKeyStatus').textContent = '✓ Saved';
+  document.getElementById('mobKeyStatus').style.color = 'var(--green)';
+  document.getElementById('mobKeyInput').value = k.substring(0,8) + '••••••••••';
+  document.getElementById('sidebarKey').value = k.substring(0,8) + '•••••••••••••';
+  document.getElementById('keySaved').style.display = 'block';
+  addLog('ok', 'Gemini API key saved via mobile.');
+  setTimeout(() => { document.getElementById('mobKeyStatus').textContent = ''; }, 3000);
+}
+
+function updateMobKeyUI(){
+  const k = localStorage.getItem('gemini_api_key');
+  if(k){
+    document.getElementById('mobKeyInput').value = k.substring(0,8) + '••••••••••';
+    document.getElementById('mobKeyStatus').textContent = '✓ Key ready';
+    document.getElementById('mobKeyStatus').style.color = 'var(--green)';
+  }
+}
+
+// Start lock screen auto-focus
+document.getElementById('lockPwd').focus();
+
+// Also update mobile key UI on init
+const _origInit = typeof init === 'function' ? init : null;
+</script>
+</body>
+</html>

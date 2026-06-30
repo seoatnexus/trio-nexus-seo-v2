@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /seo-os.html
+
+Sitemap: https://www.trionexus.org/sitemap.xml
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
