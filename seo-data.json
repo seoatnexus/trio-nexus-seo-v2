@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "Poland Student Visa Guide for Pakistanis",
+      "category": "Study Abroad",
+      "content": "",
+      "excerpt": "...",
+      "date": "30/06/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Corporate Law Services in Lahore 2025",
       "category": "Legal",
       "content": "",
@@ -11,9 +19,10 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 1,
+  "runs": 2,
   "used_topics": [
-    "Corporate Law Services in Lahore 2025"
+    "Corporate Law Services in Lahore 2025",
+    "Poland Student Visa Guide for Pakistanis"
   ],
-  "lastRun": "2026-06-30T09:44:48.880Z"
+  "lastRun": "2026-06-30T10:08:31.502Z"
 }
