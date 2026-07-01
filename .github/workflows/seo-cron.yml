@@ -125,7 +125,9 @@ jobs:
               results[`updated_${svc.key}`] = new Date().toLocaleDateString('en-PK', { dateStyle: 'medium' });
               console.log(`  ✓ Content rewritten`);
 
-              await new Promise(r => setTimeout(r, 1500));
+              // Wait 65s between services — keeps within Gemini free tier (15 rpm)
+              console.log(`  ⏳ Waiting 65s before next service...`);
+              await new Promise(r => setTimeout(r, 65000));
             } catch(e) { console.error(`  ✗ ${svc.name}: ${e.message}`); }
           }
 
