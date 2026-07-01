@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "HR Payroll Management Best Practices Pakistan",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
+      "date": "01/07/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Poland Student Visa Guide for Pakistanis",
       "category": "Study Abroad",
       "content": "",
@@ -19,10 +27,11 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 2,
+  "runs": 3,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
-    "Poland Student Visa Guide for Pakistanis"
+    "Poland Student Visa Guide for Pakistanis",
+    "HR Payroll Management Best Practices Pakistan"
   ],
-  "lastRun": "2026-06-30T10:08:31.502Z"
+  "lastRun": "2026-07-01T07:20:48.446Z"
 }
