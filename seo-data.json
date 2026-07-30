@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "Germany Scholarships for Pakistani Students 2025",
+      "category": "Study Abroad",
+      "content": "",
+      "excerpt": "...",
+      "date": "30/07/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "HR Payroll Management Best Practices Pakistan",
       "category": "HR",
       "content": "",
@@ -27,11 +35,12 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 3,
+  "runs": 4,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
-    "HR Payroll Management Best Practices Pakistan"
+    "HR Payroll Management Best Practices Pakistan",
+    "Germany Scholarships for Pakistani Students 2025"
   ],
-  "lastRun": "2026-07-01T07:20:48.446Z"
+  "lastRun": "2026-07-30T15:58:47.852Z"
 }
