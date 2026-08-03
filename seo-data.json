@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "Contract Drafting Essentials for Pakistani Businesses",
+      "category": "Legal",
+      "content": "",
+      "excerpt": "...",
+      "date": "03/08/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Germany Scholarships for Pakistani Students 2025",
       "category": "Study Abroad",
       "content": "",
@@ -35,12 +43,13 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 4,
+  "runs": 5,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
     "HR Payroll Management Best Practices Pakistan",
-    "Germany Scholarships for Pakistani Students 2025"
+    "Germany Scholarships for Pakistani Students 2025",
+    "Contract Drafting Essentials for Pakistani Businesses"
   ],
-  "lastRun": "2026-07-30T15:58:47.852Z"
+  "lastRun": "2026-08-03T13:48:40.886Z"
 }
