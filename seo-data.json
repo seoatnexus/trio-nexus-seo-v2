@@ -7,6 +7,14 @@
       "category": "HR",
       "content": "",
       "excerpt": "...",
+      "date": "10/08/2026",
+      "readTime": "3 min"
+    },
+    {
+      "title": "Executive Search Trends in Pakistan 2025",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
       "date": "06/08/2026",
       "readTime": "3 min"
     },
@@ -51,14 +59,15 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 6,
+  "runs": 7,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
     "HR Payroll Management Best Practices Pakistan",
     "Germany Scholarships for Pakistani Students 2025",
     "Contract Drafting Essentials for Pakistani Businesses",
+    "Executive Search Trends in Pakistan 2025",
     "Executive Search Trends in Pakistan 2025"
   ],
-  "lastRun": "2026-08-06T11:12:35.036Z"
+  "lastRun": "2026-08-10T05:38:37.026Z"
 }
