@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "HR Payroll Management Best Practices Pakistan",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
+      "date": "13/08/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Executive Search Trends in Pakistan 2025",
       "category": "HR",
       "content": "",
@@ -59,7 +67,7 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 7,
+  "runs": 8,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
@@ -67,7 +75,8 @@
     "Germany Scholarships for Pakistani Students 2025",
     "Contract Drafting Essentials for Pakistani Businesses",
     "Executive Search Trends in Pakistan 2025",
-    "Executive Search Trends in Pakistan 2025"
+    "Executive Search Trends in Pakistan 2025",
+    "HR Payroll Management Best Practices Pakistan"
   ],
-  "lastRun": "2026-08-10T05:38:37.026Z"
+  "lastRun": "2026-08-13T09:53:33.457Z"
 }
