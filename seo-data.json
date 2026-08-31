@@ -7,6 +7,14 @@
       "category": "HR",
       "content": "",
       "excerpt": "...",
+      "date": "31/08/2026",
+      "readTime": "3 min"
+    },
+    {
+      "title": "HR Payroll Management Best Practices Pakistan",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
       "date": "27/08/2026",
       "readTime": "3 min"
     },
@@ -99,7 +107,7 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 12,
+  "runs": 13,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
@@ -112,7 +120,8 @@
     "Contract Drafting Essentials for Pakistani Businesses",
     "Executive Search Trends in Pakistan 2025",
     "HR Payroll Management Best Practices Pakistan",
+    "HR Payroll Management Best Practices Pakistan",
     "HR Payroll Management Best Practices Pakistan"
   ],
-  "lastRun": "2026-08-27T19:19:57.213Z"
+  "lastRun": "2026-08-31T10:43:57.317Z"
 }
