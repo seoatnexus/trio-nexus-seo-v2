@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "Executive Search Trends in Pakistan 2025",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
+      "date": "10/09/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Germany Scholarships for Pakistani Students 2025",
       "category": "Study Abroad",
       "content": "",
@@ -123,7 +131,7 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 15,
+  "runs": 16,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
@@ -139,7 +147,8 @@
     "HR Payroll Management Best Practices Pakistan",
     "HR Payroll Management Best Practices Pakistan",
     "Germany Scholarships for Pakistani Students 2025",
-    "Germany Scholarships for Pakistani Students 2025"
+    "Germany Scholarships for Pakistani Students 2025",
+    "Executive Search Trends in Pakistan 2025"
   ],
-  "lastRun": "2026-09-07T09:12:54.326Z"
+  "lastRun": "2026-09-10T13:12:54.239Z"
 }
