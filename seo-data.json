@@ -7,6 +7,14 @@
       "category": "Study Abroad",
       "content": "",
       "excerpt": "...",
+      "date": "05/10/2026",
+      "readTime": "3 min"
+    },
+    {
+      "title": "Germany Scholarships for Pakistani Students 2025",
+      "category": "Study Abroad",
+      "content": "",
+      "excerpt": "...",
       "date": "01/10/2026",
       "readTime": "3 min"
     },
@@ -179,7 +187,7 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 22,
+  "runs": 23,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
@@ -202,7 +210,8 @@
     "Germany Scholarships for Pakistani Students 2025",
     "Germany Scholarships for Pakistani Students 2025",
     "Corporate Law Services in Lahore 2025",
+    "Germany Scholarships for Pakistani Students 2025",
     "Germany Scholarships for Pakistani Students 2025"
   ],
-  "lastRun": "2026-10-01T15:49:38.540Z"
+  "lastRun": "2026-10-05T11:20:04.137Z"
 }
