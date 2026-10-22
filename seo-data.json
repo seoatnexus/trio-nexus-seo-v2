@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "Executive Search Trends in Pakistan 2025",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
+      "date": "22/10/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Corporate Law Services in Lahore 2025",
       "category": "Legal",
       "content": "",
@@ -219,7 +227,7 @@
       "readTime": "3 min"
     }
   ],
-  "runs": 27,
+  "runs": 28,
   "used_topics": [
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
@@ -247,7 +255,8 @@
     "Executive Search Trends in Pakistan 2025",
     "Corporate Law Services in Lahore 2025",
     "Poland Student Visa Guide for Pakistanis",
-    "Corporate Law Services in Lahore 2025"
+    "Corporate Law Services in Lahore 2025",
+    "Executive Search Trends in Pakistan 2025"
   ],
-  "lastRun": "2026-10-19T09:46:08.412Z"
+  "lastRun": "2026-10-22T14:13:42.849Z"
 }
