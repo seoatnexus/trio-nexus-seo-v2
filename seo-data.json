@@ -3,6 +3,14 @@
   "faqs": [],
   "blog_posts": [
     {
+      "title": "HR Payroll Management Best Practices Pakistan",
+      "category": "HR",
+      "content": "",
+      "excerpt": "...",
+      "date": "09/11/2026",
+      "readTime": "3 min"
+    },
+    {
       "title": "Poland Student Visa Guide for Pakistanis",
       "category": "Study Abroad",
       "content": "",
@@ -233,19 +241,10 @@
       "excerpt": "...",
       "date": "30/07/2026",
       "readTime": "3 min"
-    },
-    {
-      "title": "HR Payroll Management Best Practices Pakistan",
-      "category": "HR",
-      "content": "",
-      "excerpt": "...",
-      "date": "01/07/2026",
-      "readTime": "3 min"
     }
   ],
-  "runs": 32,
+  "runs": 33,
   "used_topics": [
-    "HR Payroll Management Best Practices Pakistan",
     "Germany Scholarships for Pakistani Students 2025",
     "Contract Drafting Essentials for Pakistani Businesses",
     "Executive Search Trends in Pakistan 2025",
@@ -274,7 +273,8 @@
     "HR Payroll Management Best Practices Pakistan",
     "Germany Scholarships for Pakistani Students 2025",
     "Germany Scholarships for Pakistani Students 2025",
-    "Poland Student Visa Guide for Pakistanis"
+    "Poland Student Visa Guide for Pakistanis",
+    "HR Payroll Management Best Practices Pakistan"
   ],
-  "lastRun": "2026-11-05T16:57:09.866Z"
+  "lastRun": "2026-11-09T12:42:58.737Z"
 }
